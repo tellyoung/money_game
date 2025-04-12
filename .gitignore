@@ -1,3 +1,5 @@
 .idea/
 .DS_Store
 .ipynb_checkpoints
+Data/
+user_data/
