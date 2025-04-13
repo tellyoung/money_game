@@ -1,11 +1,11 @@
 clear
 
-source activate
-conda activate freqtrade
+# source activate
+# conda activate freqtrade
 
 
 freqtrade test-pairlist \
---config /Users/yutieyang/Documents/yuty_projects/freqtrade/yuty_space/yuty_data/configs/config_future_bt.json \
---userdir /Users/yutieyang/Documents/yuty_projects/freqtrade/yuty_space/yuty_data/data/2024 \
+--config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_futrue_test.json \
+--userdir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data \
 --quote USDT \
 --print-json 
