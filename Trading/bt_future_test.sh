@@ -4,7 +4,7 @@ clear
 
 
 freqtrade backtesting \
---config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_futrue_test.json \
+--config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_test_futrue_TrendFollowingStrategy.json \
 --userdir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data \
 --datadir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Data/binance/Vol_top20_futrue_20250101_20250411 \
 --breakdown week \
