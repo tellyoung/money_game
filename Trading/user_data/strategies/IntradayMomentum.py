@@ -7,13 +7,13 @@ import talib.abstract as ta
 from freqtrade.strategy.interface import IStrategy
 
 class IntradayMomentum(IStrategy):
-    
+    INTERFACE_VERSION: int = 3
     can_short = True
 
-    INTERFACE_VERSION: int = 3
+    timeframe = "5m"
+
     # ROI table:
     minimal_roi = {"0": 0.15, "30": 0.1, "60": 0.05}
-    # minimal_roi = {"0": 1}
 
     # Stoploss:
     stoploss = -0.265
@@ -24,50 +24,71 @@ class IntradayMomentum(IStrategy):
     trailing_stop_positive_offset = 0.1
     trailing_only_offset_is_reached = False
 
-    timeframe = "5m"
+    # 目前最优0.8
+    band_mult = 0.8
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        # Calculate OBV
-        dataframe['obv'] = ta.OBV(dataframe['close'], dataframe['volume'])
-        
-        # Add your trend following indicators here
-        dataframe['trend'] = dataframe['close'].ewm(span=20, adjust=False).mean()
-        
+        """
+        Populate indicators required for the strategy.
+        """
+        # Calculate VWAP
+        hlc = (dataframe['high'] + dataframe['low'] + dataframe['close']) / 3
+        dataframe['vwap'] = (hlc * dataframe['volume']).cumsum() / dataframe['volume'].cumsum()
+
+        # Calculate rolling mean and sigma
+        dataframe['move_open'] = (dataframe['close'] / dataframe['open'] - 1).abs()
+        dataframe['move_open_rolling_mean'] = dataframe['move_open'].rolling(window=14, min_periods=13).mean()
+        dataframe['sigma_open'] = dataframe['move_open_rolling_mean'].shift(1)
+
         return dataframe
-    
+
+
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        # Add your trend following buy signals here
+        """
+        Populate entry signals based on the strategy logic.
+        """
+        dataframe['enter_long'] = 0
+        dataframe['enter_short'] = 0
+
+        # Calculate upper and lower bands
+        dataframe['UB'] = dataframe['open'] * (1 + self.band_mult * dataframe['sigma_open'])
+        dataframe['LB'] = dataframe['open'] * (1 - self.band_mult * dataframe['sigma_open'])
+
+        # Long entry signal: Price > UB and Price > VWAP
         dataframe.loc[
-            (dataframe['close'] > dataframe['trend']) & 
-            (dataframe['close'].shift(1) <= dataframe['trend'].shift(1)) &
-            (dataframe['obv'] > dataframe['obv'].shift(1)), 
-            'enter_long'] = 1
-        
-        # Add your trend following sell signals here
+            (dataframe['close'] > dataframe['UB']) & (dataframe['close'] > dataframe['vwap']),
+            'enter_long'
+        ] = 1
+
+        # Short entry signal: Price < LB and Price < VWAP
         dataframe.loc[
-            (dataframe['close'] < dataframe['trend']) & 
-            (dataframe['close'].shift(1) >= dataframe['trend'].shift(1)) &
-            (dataframe['obv'] < dataframe['obv'].shift(1)), 
-            'enter_short'] = 1
-        
-        
+            (dataframe['close'] < dataframe['LB']) & (dataframe['close'] < dataframe['vwap']),
+            'enter_short'
+        ] = 1
+
         return dataframe
+
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        # Add your trend following exit signals for long positions here
+        """
+        Populate exit signals.
+        """
+        dataframe['exit_long'] = 0
+        dataframe['exit_short'] = 0
+
+        # Exit long when price drops below VWAP
         dataframe.loc[
-            (dataframe['close'] < dataframe['trend']) & 
-            (dataframe['close'].shift(1) >= dataframe['trend'].shift(1)) &
-            (dataframe['obv'] > dataframe['obv'].shift(1)), 
-            'exit_long'] = 1
-        
-        # Add your trend following exit signals for short positions here
+            (dataframe['close'] < dataframe['vwap']),
+            'exit_long'
+        ] = 1
+
+        # Exit short when price rises above VWAP
         dataframe.loc[
-            (dataframe['close'] > dataframe['trend']) & 
-            (dataframe['close'].shift(1) <= dataframe['trend'].shift(1)) &
-            (dataframe['obv'] < dataframe['obv'].shift(1)), 
-            'exit_short'] = 1
+            (dataframe['close'] > dataframe['vwap']),
+            'exit_short'
+        ] = 1
 
         return dataframe
 
-#  IntradayMomentum
+
+
