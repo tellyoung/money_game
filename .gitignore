@@ -2,5 +2,7 @@
 .DS_Store
 .ipynb_checkpoints
 Data/
-user_data/
+Trading/user_data/configs/
 Trading4Real/
+backtest_results/
+__pycache__/
