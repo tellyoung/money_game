@@ -5,6 +5,8 @@ from freqtrade.strategy import IStrategy
 import talib.abstract as ta
 
 from freqtrade.strategy.interface import IStrategy
+from freqtrade.strategy import (BooleanParameter, CategoricalParameter, DecimalParameter, 
+                                IStrategy, IntParameter)
 
 class IntradayMomentum(IStrategy):
     INTERFACE_VERSION: int = 3
@@ -12,11 +14,15 @@ class IntradayMomentum(IStrategy):
 
     timeframe = "5m"
 
-    # ROI table:
-    minimal_roi = {"0": 0.15, "30": 0.1, "60": 0.05}
+    # ROI table (hyperoptable)
+    minimal_roi = {
+        "0": 0.05,  # Default values, will be overridden by hyperopt
+        "30": 0.03,
+        "60": 0.01
+    }
 
-    # Stoploss:
-    stoploss = -0.265
+    # Stoploss (hyperoptable)
+    stoploss = -0.01  # Default value, will be overridden by hyperopt
 
     # Trailing stop:
     trailing_stop = True
@@ -24,12 +30,16 @@ class IntradayMomentum(IStrategy):
     trailing_stop_positive_offset = 0.1
     trailing_only_offset_is_reached = False
 
-    # 目前最优0.8
-    band_mult = 0.8
+
+    # Hyperoptable parameters
+    band_mult_UB = DecimalParameter(0.3, 5., default=0.8, space="buy", optimize=True)
+    band_mult_LB = DecimalParameter(0.3, 5., default=0.8, space="buy", optimize=True)
+    sell_threshold = DecimalParameter(0.95, 1.05, default=1.0, space="sell", optimize=True)
+
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """
-        Populate indicators required for the strategy.
+            Populate indicators required for the strategy.
         """
         # Calculate VWAP
         hlc = (dataframe['high'] + dataframe['low'] + dataframe['close']) / 3
@@ -45,14 +55,14 @@ class IntradayMomentum(IStrategy):
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """
-        Populate entry signals based on the strategy logic.
+            Populate entry signals based on the strategy logic.
         """
         dataframe['enter_long'] = 0
         dataframe['enter_short'] = 0
 
         # Calculate upper and lower bands
-        dataframe['UB'] = dataframe['open'] * (1 + self.band_mult * dataframe['sigma_open'])
-        dataframe['LB'] = dataframe['open'] * (1 - self.band_mult * dataframe['sigma_open'])
+        dataframe['UB'] = dataframe['open'] * (1 + self.band_mult_UB.value * dataframe['sigma_open'])
+        dataframe['LB'] = dataframe['open'] * (1 - self.band_mult_LB.value * dataframe['sigma_open'])
 
         # Long entry signal: Price > UB and Price > VWAP
         dataframe.loc[
@@ -66,6 +76,10 @@ class IntradayMomentum(IStrategy):
             'enter_short'
         ] = 1
 
+        # print(dataframe[['close', 'UB', 'LB', 'vwap', "enter_long", "enter_short"]].tail(100))
+        # print(dataframe.loc[dataframe['enter_long'] == 1, ['date', 'close', 'UB', 'LB', 'vwap', "enter_long", "enter_short"]]).tail(100))
+        # print(dataframe.loc[dataframe['enter_short'] == 1, ['date', 'close', 'UB', 'LB', 'vwap', "enter_long", "enter_short"]]).tail(100))
+
         return dataframe
 
 
@@ -76,19 +90,41 @@ class IntradayMomentum(IStrategy):
         dataframe['exit_long'] = 0
         dataframe['exit_short'] = 0
 
+        # dataframe.loc[
+        #     (dataframe['close'] < dataframe['LB']) & (dataframe['close'] < dataframe['vwap']),
+        #     'exit_long'
+        # ] = 1
+
+        # dataframe.loc[
+        #     (dataframe['close'] > dataframe['UB']) & (dataframe['close'] > dataframe['vwap']),
+        #     'exit_short'
+        # ] = 1
+
         # Exit long when price drops below VWAP
+        # dataframe.loc[
+        #     (dataframe['close'] < dataframe['vwap']),
+        #     'exit_long'
+        # ] = 1
+
+        # # Exit short when price rises above VWAP
+        # dataframe.loc[
+        #     (dataframe['close'] > dataframe['vwap']),
+        #     'exit_short'
+        # ] = 1
+
+        # Exit long when price drops below VWAP * sell_threshold
         dataframe.loc[
-            (dataframe['close'] < dataframe['vwap']),
+            (dataframe['close'] < dataframe['vwap'] * self.sell_threshold.value),
             'exit_long'
         ] = 1
 
-        # Exit short when price rises above VWAP
+        # Exit short when price rises above VWAP * sell_threshold
         dataframe.loc[
-            (dataframe['close'] > dataframe['vwap']),
+            (dataframe['close'] > dataframe['vwap'] * self.sell_threshold.value),
             'exit_short'
         ] = 1
-
         return dataframe
+
 
 
 

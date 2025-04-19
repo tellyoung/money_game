@@ -1,0 +1,33 @@
+{
+  "strategy_name": "IntradayMomentum",
+  "params": {
+    "buy": {
+      "band_mult_LB": 0.378,
+      "band_mult_UB": 4.541
+    },
+    "sell": {
+      "sell_threshold": 1.02
+    },
+    "protection": {},
+    "roi": {
+      "0": 0.102,
+      "20": 0.029,
+      "74": 0.017,
+      "185": 0
+    },
+    "stoploss": {
+      "stoploss": -0.059
+    },
+    "trailing": {
+      "trailing_stop": true,
+      "trailing_stop_positive": 0.092,
+      "trailing_stop_positive_offset": 0.107,
+      "trailing_only_offset_is_reached": true
+    },
+    "max_open_trades": {
+      "max_open_trades": 2
+    }
+  },
+  "ft_stratparam_v": 1,
+  "export_time": "2025-04-18 18:34:13.309633+00:00"
+}
