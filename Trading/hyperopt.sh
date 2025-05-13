@@ -6,8 +6,8 @@ freqtrade hyperopt \
 --datadir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Data/binance/Vol_top20_futrue_20200101_20250417 \
 --strategy-path /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/strategies \
 --recursive-strategy-search \
---config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_test_futrue_IntradayMomentum.json \
---strategy IntradayMomentum \
+--config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_test_futrue_TrendFollowingStrategy.json \
+--strategy TrendFollowingStrategy \
 --hyperopt-loss MaxDrawDownHyperOptLoss \
 --epochs 666 \
 --spaces buy sell roi stoploss trailing trades \
@@ -19,3 +19,9 @@ freqtrade hyperopt \
 # ProfitDrawDownHyperOptLoss
 # MaxDrawDownHyperOptLoss
 # MaxDrawDownRelativeHyperOptLoss
+
+# --config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_test_futrue_TrendFollowingStrategy.json \
+# --strategy TrendFollowingStrategy \
+
+# --config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_test_futrue_IntradayMomentum.json \
+# --strategy IntradayMomentum \

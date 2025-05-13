@@ -1,0 +1,35 @@
+{
+  "strategy_name": "TrendFollowingStrategy",
+  "params": {
+    "buy": {
+      "obv_threshold": -0.022,
+      "trend_ema_span": 32
+    },
+    "sell": {
+      "sell_obv_multiplier": 0.989,
+      "sell_rsi_threshold": 30,
+      "sell_rsi_timeperiod": 11
+    },
+    "protection": {},
+    "roi": {
+      "0": 0.181,
+      "15": 0.08399999999999999,
+      "46": 0.024,
+      "110": 0
+    },
+    "stoploss": {
+      "stoploss": -0.316
+    },
+    "trailing": {
+      "trailing_stop": true,
+      "trailing_stop_positive": 0.216,
+      "trailing_stop_positive_offset": 0.253,
+      "trailing_only_offset_is_reached": false
+    },
+    "max_open_trades": {
+      "max_open_trades": 8
+    }
+  },
+  "ft_stratparam_v": 1,
+  "export_time": "2025-04-19 15:28:42.230640+00:00"
+}
