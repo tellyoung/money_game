@@ -1,6 +1,7 @@
 clear
 
-# conda activate freqtrade
+source activate
+conda activate freqtrade
 
 # ================= IntradayMomentum ===========================
 # freqtrade backtesting \
@@ -19,12 +20,12 @@ clear
 freqtrade backtesting \
 --config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_test_futrue_TrendFollowingStrategy.json \
 --userdir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data \
---strategy TrendFollowingStrategy \
+--strategy TrendFollowingStrategy_base \
 --datadir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Data/binance/Vol_top20_futrue_20200101_20250417 \
 --breakdown month \
 --strategy-path /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/strategies \
 --recursive-strategy-search \
---timerange 20240401-20250417 \
+--timerange 20250101-20250417 \
 
 
 # --config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_test_futrue_TrendFollowingStrategy.json \
