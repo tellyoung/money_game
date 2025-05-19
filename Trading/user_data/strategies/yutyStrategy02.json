@@ -1,0 +1,43 @@
+{
+  "strategy_name": "yutyStrategy02",
+  "params": {
+    "roi": {
+      "0": 0.212,
+      "10": 0.082,
+      "65": 0.025,
+      "103": 0
+    },
+    "stoploss": {
+      "stoploss": -0.329
+    },
+    "trailing": {
+      "trailing_stop": true,
+      "trailing_stop_positive": 0.137,
+      "trailing_stop_positive_offset": 0.14,
+      "trailing_only_offset_is_reached": false
+    },
+    "max_open_trades": {
+      "max_open_trades": 5
+    },
+    "buy": {
+      "atr_period": 23,
+      "h_w": 7,
+      "l_w": 8,
+      "ma_period": 18,
+      "momentum_threshold_long": 0.12,
+      "momentum_threshold_short": 0.18,
+      "roc_n": 11,
+      "volatility_threshold": 0.029
+    },
+    "sell": {
+      "initial_stoploss_multiplier": 1.853,
+      "sell_1": 1,
+      "sell_2": 3,
+      "trailing_stop_multiplier_long": 0.848,
+      "trailing_stop_multiplier_short": 1.274
+    },
+    "protection": {}
+  },
+  "ft_stratparam_v": 1,
+  "export_time": "2025-05-17 05:54:33.099261+00:00"
+}

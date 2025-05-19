@@ -42,6 +42,11 @@ class TrendFollowingStrategy_base(IStrategy):
         return dataframe
     
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        if dataframe['close'] > dataframe['trend'] and \
+            dataframe['close'].shift(1) <= dataframe['trend'].shift(1) and \
+            dataframe['obv'] > dataframe['obv'].shift(1):
+            print("=====================================")
+
         # Add your trend following buy signals here
         dataframe.loc[
             (dataframe['close'] > dataframe['trend']) & 
