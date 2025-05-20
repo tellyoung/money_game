@@ -1,0 +1,41 @@
+# 数据配置
+data_path: "/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Data/binance/Vol_top20_20250101_20250201/BTC_USDT-5m.feather"  # 输入的历史数据路径（Feather格式）
+output_path: "/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/factor_mining/factor_data/factor_data.feather"    # 输出的因子数据路径
+
+# 因子模块配置
+factor_modules:
+  - factors.basic_factors   # 基础因子模块
+  - factors.advanced_factors  # 高级因子模块
+
+# 评估配置
+target_column: "returns"  # 目标预测列，用于评估因子有效性
+top_n_factors: 15        # 选择的最佳因子数量
+
+# 自动因子生成配置
+random_factors_count: 20  # 自动生成的随机因子数量
+
+# 日志配置
+log_level: INFO  # 日志级别    
+
+# 缺失值处理配置
+missing_value_config:
+  method: "ffill"  # 处理方法，可选: ffill, bfill, mean, median, interpolate
+  handle_before_evaluation: true  # 是否在评估前统一处理
+
+# 机器学习评估器配置
+ml_evaluator:
+  models:
+    XGBoost:
+      module: xgboost
+      class: XGBClassifier
+      params:
+        n_estimators: 100
+        max_depth: 5
+        learning_rate: 0.1
+
+# 特征生成器配置
+feature_generator:
+  max_combination: 2  # 最大因子组合数
+  windows: [5]  # 时间窗口大小
+  # windows: [5, 10, 20, 60]  # 时间窗口大小
+  polynomial_degree: 2  # 多项式阶数

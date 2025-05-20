@@ -1,7 +1,10 @@
 .idea/
+.vscode/
 .DS_Store
 .ipynb_checkpoints
 Data/
+factor_data/
+*.log
 
 Trading/user_data/configs/
 Trading/user_data/hyperopt_results/
