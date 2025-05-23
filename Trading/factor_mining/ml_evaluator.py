@@ -62,12 +62,13 @@ class MLEvaluator:
                 max_depth=3,       # 树的最大深度
                 random_state=42    # 随机种子
             ),
-            'LogisticRegression': LogisticRegression(
-                penalty='l2',      # L2正则化
-                C=1.0,             # 正则化强度的倒数
-                random_state=42,   # 随机种子
-                n_jobs=-1          # 使用所有CPU核心
-            )
+            # 'LogisticRegression': LogisticRegression(
+            #     penalty='l2',      # L2正则化
+            #     C=1.0,             # 正则化强度的倒数
+            #     random_state=42,   # 随机种子
+            #     n_jobs=-1,          # 使用所有CPU核心
+            #     max_iter=1000  # 增加最大迭代次数
+            # )
         }
         
         # 添加配置中的自定义模型

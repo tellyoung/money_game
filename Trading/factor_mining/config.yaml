@@ -1,5 +1,5 @@
 # 数据配置
-data_path: "/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Data/binance/Vol_top20_20250101_20250201/BTC_USDT-5m.feather"  # 输入的历史数据路径（Feather格式）
+data_path: "/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Data/binance/Vol_top20_20250101_20250201/BTC_USDT-1h.feather"  # 输入的历史数据路径（Feather格式）
 output_path: "/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/factor_mining/factor_data/factor_data.feather"    # 输出的因子数据路径
 
 # 因子模块配置
@@ -23,15 +23,15 @@ missing_value_config:
   handle_before_evaluation: true  # 是否在评估前统一处理
 
 # 机器学习评估器配置
-ml_evaluator:
-  models:
-    XGBoost:
-      module: xgboost
-      class: XGBClassifier
-      params:
-        n_estimators: 100
-        max_depth: 5
-        learning_rate: 0.1
+# ml_evaluator:
+#   models:
+    # XGBoost:
+    #   module: xgboost
+    #   class: XGBClassifier
+    #   params:
+    #     n_estimators: 100
+    #     max_depth: 5
+    #     learning_rate: 0.1
 
 # 特征生成器配置
 feature_generator:

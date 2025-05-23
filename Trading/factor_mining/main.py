@@ -31,7 +31,7 @@ class FactorMiningEngine:
         """加载配置文件，获取数据路径、因子模块等参数"""
         try:
             import yaml
-            with open(config_path, 'r') as f:
+            with open(config_path, 'r', encoding='utf-8') as f:
                 return yaml.safe_load(f)
         except Exception as e:
             self.logger.error(f"加载配置失败: {e}")
@@ -532,7 +532,7 @@ if __name__ == "__main__":
         engine.logger.info(f"已注册自动生成因子: {factor.name}")
     
     # 生成所有因子
-    engine.generate_factors()
+    engine.generate_factors(parallel=False)
     
     # 计算每日收益率
     engine.calculate_returns(price_col='close', period=1)  
