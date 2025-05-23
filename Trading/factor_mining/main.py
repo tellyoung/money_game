@@ -11,6 +11,9 @@ from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import roc_auc_score
 import warnings
 from factors.factor import Factor,DynamicFactor
+from factor_saver import save_factor_logic, load_factor_logic
+from trading_strategy import TradingStrategy
+from freqtrade_strategy import FactorBasedStrategy
 # 忽略警告
 warnings.filterwarnings('ignore')
 
@@ -561,4 +564,16 @@ if __name__ == "__main__":
     
     print("因子挖掘完成!")
     print(f"最佳因子: {best_factors}")
-    print(f"机器学习评估最佳因子: {engine.consensus_factors}")    
+    print(f"机器学习评估最佳因子: {engine.consensus_factors}")
+
+    # 假设已经分析出有效因子
+    valid_factors = ['factor1', 'factor2']
+
+    # 保存因子计算逻辑
+    save_factor_logic(valid_factors, 'path/to/save/factor_logic.pkl')
+
+    # 应用因子到交易场景
+    strategy = TradingStrategy(valid_factors)
+
+    # 生成freqtrade格式的策略
+    freqtrade_strat = FactorBasedStrategy({})
