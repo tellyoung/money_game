@@ -20,15 +20,15 @@ class Factor:
     
 
 class DynamicFactor(Factor):
-    """动态生成的因子类"""
-    def __init__(self, name, operation, features, window, lag):
+    """动态生成的因子类，支持参数化构造，便于序列化/反序列化"""
+    def __init__(self, name=None, operation=None, features=None, window=None, lag=None):
         super().__init__()
-        self.name = name
+        self.name = name or self._get_factor_name()
         self.operation = operation
-        self.features = features
+        self.features = features or []
         self.window = window
         self.lag = lag
-        self.description = f"动态生成因子: {operation}({', '.join(features)})"
+        self.description = f"动态生成因子: {self.operation}({', '.join(self.features)})" if self.operation and self.features else ""
         
     def generate(self, data: pd.DataFrame) -> pd.Series:
         # 基础特征组合

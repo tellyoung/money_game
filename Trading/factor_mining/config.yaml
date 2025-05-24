@@ -39,3 +39,11 @@ feature_generator:
   windows: [5]  # 时间窗口大小
   # windows: [5, 10, 20, 60]  # 时间窗口大小
   polynomial_degree: 2  # 多项式阶数
+
+# 策略导出配置
+strategy_export:
+  path: "MyStrategy.py"
+  signal_method: "zscore"
+
+# 信号生成方法配置
+signal_method: "ml"  # 可选: zscore, quantile, ml

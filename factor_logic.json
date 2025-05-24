@@ -1,0 +1,1262 @@
+{
+  "RandomFactor_1": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_1",
+      "operation": "rank",
+      "features": [
+        "high",
+        "open"
+      ],
+      "window": 44,
+      "lag": 6
+    }
+  },
+  "RandomFactor_2": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_2",
+      "operation": "zscore",
+      "features": [
+        "close"
+      ],
+      "window": 49,
+      "lag": 3
+    }
+  },
+  "RandomFactor_3": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_3",
+      "operation": "rank",
+      "features": [
+        "close",
+        "high"
+      ],
+      "window": 30,
+      "lag": 7
+    }
+  },
+  "RandomFactor_4": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_4",
+      "operation": "lag",
+      "features": [
+        "low",
+        "high",
+        "open"
+      ],
+      "window": 57,
+      "lag": 1
+    }
+  },
+  "RandomFactor_5": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_5",
+      "operation": "zscore",
+      "features": [
+        "volume",
+        "low",
+        "open"
+      ],
+      "window": 26,
+      "lag": 4
+    }
+  },
+  "RandomFactor_6": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_6",
+      "operation": "rolling_mean",
+      "features": [
+        "close",
+        "low",
+        "open"
+      ],
+      "window": 35,
+      "lag": 5
+    }
+  },
+  "RandomFactor_7": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_7",
+      "operation": "zscore",
+      "features": [
+        "volume"
+      ],
+      "window": 41,
+      "lag": 9
+    }
+  },
+  "RandomFactor_8": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_8",
+      "operation": "lag",
+      "features": [
+        "close",
+        "low"
+      ],
+      "window": 8,
+      "lag": 7
+    }
+  },
+  "RandomFactor_9": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_9",
+      "operation": "lag",
+      "features": [
+        "low",
+        "open",
+        "high"
+      ],
+      "window": 45,
+      "lag": 4
+    }
+  },
+  "RandomFactor_10": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_10",
+      "operation": "rolling_std",
+      "features": [
+        "high",
+        "low"
+      ],
+      "window": 32,
+      "lag": 9
+    }
+  },
+  "RandomFactor_11": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_11",
+      "operation": "lag",
+      "features": [
+        "high"
+      ],
+      "window": 6,
+      "lag": 8
+    }
+  },
+  "RandomFactor_12": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_12",
+      "operation": "zscore",
+      "features": [
+        "low",
+        "open"
+      ],
+      "window": 14,
+      "lag": 5
+    }
+  },
+  "RandomFactor_13": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_13",
+      "operation": "pct_change",
+      "features": [
+        "volume",
+        "close"
+      ],
+      "window": 38,
+      "lag": 1
+    }
+  },
+  "RandomFactor_14": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_14",
+      "operation": "rolling_mean",
+      "features": [
+        "high",
+        "low",
+        "volume"
+      ],
+      "window": 29,
+      "lag": 1
+    }
+  },
+  "RandomFactor_15": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_15",
+      "operation": "rolling_mean",
+      "features": [
+        "volume",
+        "close"
+      ],
+      "window": 38,
+      "lag": 1
+    }
+  },
+  "RandomFactor_16": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_16",
+      "operation": "lag",
+      "features": [
+        "high",
+        "low",
+        "volume"
+      ],
+      "window": 57,
+      "lag": 3
+    }
+  },
+  "RandomFactor_17": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_17",
+      "operation": "rolling_std",
+      "features": [
+        "close"
+      ],
+      "window": 8,
+      "lag": 2
+    }
+  },
+  "RandomFactor_18": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_18",
+      "operation": "rolling_mean",
+      "features": [
+        "open"
+      ],
+      "window": 50,
+      "lag": 2
+    }
+  },
+  "RandomFactor_19": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_19",
+      "operation": "lag",
+      "features": [
+        "volume",
+        "high"
+      ],
+      "window": 42,
+      "lag": 1
+    }
+  },
+  "RandomFactor_20": {
+    "class": "DynamicFactor",
+    "module": "factors.factor",
+    "params": {
+      "name": "RandomFactor_20",
+      "operation": "rank",
+      "features": [
+        "volume"
+      ],
+      "window": 54,
+      "lag": 3
+    }
+  },
+  "RandomFactor_1_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_1_rank"
+    }
+  },
+  "RandomFactor_1_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_1_quantile_0.1"
+    }
+  },
+  "RandomFactor_1_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_1_quantile_0.25"
+    }
+  },
+  "RandomFactor_1_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_1_quantile_0.75"
+    }
+  },
+  "RandomFactor_1_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_1_quantile_0.9"
+    }
+  },
+  "RandomFactor_1_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_1_zscore"
+    }
+  },
+  "RandomFactor_1_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_1_rs"
+    }
+  },
+  "RandomFactor_2_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_2_rank"
+    }
+  },
+  "RandomFactor_2_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_2_quantile_0.1"
+    }
+  },
+  "RandomFactor_2_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_2_quantile_0.25"
+    }
+  },
+  "RandomFactor_2_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_2_quantile_0.75"
+    }
+  },
+  "RandomFactor_2_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_2_quantile_0.9"
+    }
+  },
+  "RandomFactor_2_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_2_zscore"
+    }
+  },
+  "RandomFactor_2_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_2_rs"
+    }
+  },
+  "RandomFactor_3_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_3_rank"
+    }
+  },
+  "RandomFactor_3_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_3_quantile_0.1"
+    }
+  },
+  "RandomFactor_3_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_3_quantile_0.25"
+    }
+  },
+  "RandomFactor_3_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_3_quantile_0.75"
+    }
+  },
+  "RandomFactor_3_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_3_quantile_0.9"
+    }
+  },
+  "RandomFactor_3_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_3_zscore"
+    }
+  },
+  "RandomFactor_3_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_3_rs"
+    }
+  },
+  "RandomFactor_4_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_4_rank"
+    }
+  },
+  "RandomFactor_4_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_4_quantile_0.1"
+    }
+  },
+  "RandomFactor_4_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_4_quantile_0.25"
+    }
+  },
+  "RandomFactor_4_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_4_quantile_0.75"
+    }
+  },
+  "RandomFactor_4_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_4_quantile_0.9"
+    }
+  },
+  "RandomFactor_4_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_4_zscore"
+    }
+  },
+  "RandomFactor_4_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_4_rs"
+    }
+  },
+  "RandomFactor_5_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_5_rank"
+    }
+  },
+  "RandomFactor_5_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_5_quantile_0.1"
+    }
+  },
+  "RandomFactor_5_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_5_quantile_0.25"
+    }
+  },
+  "RandomFactor_5_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_5_quantile_0.75"
+    }
+  },
+  "RandomFactor_5_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_5_quantile_0.9"
+    }
+  },
+  "RandomFactor_5_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_5_zscore"
+    }
+  },
+  "RandomFactor_5_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_5_rs"
+    }
+  },
+  "RandomFactor_6_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_6_rank"
+    }
+  },
+  "RandomFactor_6_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_6_quantile_0.1"
+    }
+  },
+  "RandomFactor_6_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_6_quantile_0.25"
+    }
+  },
+  "RandomFactor_6_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_6_quantile_0.75"
+    }
+  },
+  "RandomFactor_6_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_6_quantile_0.9"
+    }
+  },
+  "RandomFactor_6_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_6_zscore"
+    }
+  },
+  "RandomFactor_6_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_6_rs"
+    }
+  },
+  "RandomFactor_7_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_7_rank"
+    }
+  },
+  "RandomFactor_7_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_7_quantile_0.1"
+    }
+  },
+  "RandomFactor_7_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_7_quantile_0.25"
+    }
+  },
+  "RandomFactor_7_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_7_quantile_0.75"
+    }
+  },
+  "RandomFactor_7_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_7_quantile_0.9"
+    }
+  },
+  "RandomFactor_7_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_7_zscore"
+    }
+  },
+  "RandomFactor_7_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_7_rs"
+    }
+  },
+  "RandomFactor_8_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_8_rank"
+    }
+  },
+  "RandomFactor_8_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_8_quantile_0.1"
+    }
+  },
+  "RandomFactor_8_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_8_quantile_0.25"
+    }
+  },
+  "RandomFactor_8_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_8_quantile_0.75"
+    }
+  },
+  "RandomFactor_8_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_8_quantile_0.9"
+    }
+  },
+  "RandomFactor_8_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_8_zscore"
+    }
+  },
+  "RandomFactor_8_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_8_rs"
+    }
+  },
+  "RandomFactor_9_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_9_rank"
+    }
+  },
+  "RandomFactor_9_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_9_quantile_0.1"
+    }
+  },
+  "RandomFactor_9_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_9_quantile_0.25"
+    }
+  },
+  "RandomFactor_9_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_9_quantile_0.75"
+    }
+  },
+  "RandomFactor_9_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_9_quantile_0.9"
+    }
+  },
+  "RandomFactor_9_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_9_zscore"
+    }
+  },
+  "RandomFactor_9_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_9_rs"
+    }
+  },
+  "RandomFactor_10_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_10_rank"
+    }
+  },
+  "RandomFactor_10_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_10_quantile_0.1"
+    }
+  },
+  "RandomFactor_10_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_10_quantile_0.25"
+    }
+  },
+  "RandomFactor_10_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_10_quantile_0.75"
+    }
+  },
+  "RandomFactor_10_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_10_quantile_0.9"
+    }
+  },
+  "RandomFactor_10_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_10_zscore"
+    }
+  },
+  "RandomFactor_10_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_10_rs"
+    }
+  },
+  "RandomFactor_11_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_11_rank"
+    }
+  },
+  "RandomFactor_11_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_11_quantile_0.1"
+    }
+  },
+  "RandomFactor_11_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_11_quantile_0.25"
+    }
+  },
+  "RandomFactor_11_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_11_quantile_0.75"
+    }
+  },
+  "RandomFactor_11_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_11_quantile_0.9"
+    }
+  },
+  "RandomFactor_11_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_11_zscore"
+    }
+  },
+  "RandomFactor_11_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_11_rs"
+    }
+  },
+  "RandomFactor_12_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_12_rank"
+    }
+  },
+  "RandomFactor_12_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_12_quantile_0.1"
+    }
+  },
+  "RandomFactor_12_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_12_quantile_0.25"
+    }
+  },
+  "RandomFactor_12_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_12_quantile_0.75"
+    }
+  },
+  "RandomFactor_12_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_12_quantile_0.9"
+    }
+  },
+  "RandomFactor_12_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_12_zscore"
+    }
+  },
+  "RandomFactor_12_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_12_rs"
+    }
+  },
+  "RandomFactor_13_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_13_rank"
+    }
+  },
+  "RandomFactor_13_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_13_quantile_0.1"
+    }
+  },
+  "RandomFactor_13_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_13_quantile_0.25"
+    }
+  },
+  "RandomFactor_13_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_13_quantile_0.75"
+    }
+  },
+  "RandomFactor_13_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_13_quantile_0.9"
+    }
+  },
+  "RandomFactor_13_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_13_zscore"
+    }
+  },
+  "RandomFactor_13_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_13_rs"
+    }
+  },
+  "RandomFactor_14_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_14_rank"
+    }
+  },
+  "RandomFactor_14_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_14_quantile_0.1"
+    }
+  },
+  "RandomFactor_14_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_14_quantile_0.25"
+    }
+  },
+  "RandomFactor_14_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_14_quantile_0.75"
+    }
+  },
+  "RandomFactor_14_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_14_quantile_0.9"
+    }
+  },
+  "RandomFactor_14_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_14_zscore"
+    }
+  },
+  "RandomFactor_14_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_14_rs"
+    }
+  },
+  "RandomFactor_15_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_15_rank"
+    }
+  },
+  "RandomFactor_15_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_15_quantile_0.1"
+    }
+  },
+  "RandomFactor_15_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_15_quantile_0.25"
+    }
+  },
+  "RandomFactor_15_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_15_quantile_0.75"
+    }
+  },
+  "RandomFactor_15_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_15_quantile_0.9"
+    }
+  },
+  "RandomFactor_15_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_15_zscore"
+    }
+  },
+  "RandomFactor_15_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_15_rs"
+    }
+  },
+  "RandomFactor_16_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_16_rank"
+    }
+  },
+  "RandomFactor_16_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_16_quantile_0.1"
+    }
+  },
+  "RandomFactor_16_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_16_quantile_0.25"
+    }
+  },
+  "RandomFactor_16_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_16_quantile_0.75"
+    }
+  },
+  "RandomFactor_16_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_16_quantile_0.9"
+    }
+  },
+  "RandomFactor_16_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_16_zscore"
+    }
+  },
+  "RandomFactor_16_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_16_rs"
+    }
+  },
+  "RandomFactor_17_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_17_rank"
+    }
+  },
+  "RandomFactor_17_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_17_quantile_0.1"
+    }
+  },
+  "RandomFactor_17_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_17_quantile_0.25"
+    }
+  },
+  "RandomFactor_17_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_17_quantile_0.75"
+    }
+  },
+  "RandomFactor_17_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_17_quantile_0.9"
+    }
+  },
+  "RandomFactor_17_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_17_zscore"
+    }
+  },
+  "RandomFactor_17_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_17_rs"
+    }
+  },
+  "RandomFactor_18_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_18_rank"
+    }
+  },
+  "RandomFactor_18_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_18_quantile_0.1"
+    }
+  },
+  "RandomFactor_18_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_18_quantile_0.25"
+    }
+  },
+  "RandomFactor_18_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_18_quantile_0.75"
+    }
+  },
+  "RandomFactor_18_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_18_quantile_0.9"
+    }
+  },
+  "RandomFactor_18_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_18_zscore"
+    }
+  },
+  "RandomFactor_18_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_18_rs"
+    }
+  },
+  "RandomFactor_19_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_19_rank"
+    }
+  },
+  "RandomFactor_19_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_19_quantile_0.1"
+    }
+  },
+  "RandomFactor_19_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_19_quantile_0.25"
+    }
+  },
+  "RandomFactor_19_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_19_quantile_0.75"
+    }
+  },
+  "RandomFactor_19_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_19_quantile_0.9"
+    }
+  },
+  "RandomFactor_19_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_19_zscore"
+    }
+  },
+  "RandomFactor_19_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_19_rs"
+    }
+  },
+  "RandomFactor_20_rank": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_20_rank"
+    }
+  },
+  "RandomFactor_20_quantile_0.1": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_20_quantile_0.1"
+    }
+  },
+  "RandomFactor_20_quantile_0.25": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_20_quantile_0.25"
+    }
+  },
+  "RandomFactor_20_quantile_0.75": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_20_quantile_0.75"
+    }
+  },
+  "RandomFactor_20_quantile_0.9": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_20_quantile_0.9"
+    }
+  },
+  "RandomFactor_20_zscore": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_20_zscore"
+    }
+  },
+  "RandomFactor_20_rs": {
+    "class": "DynamicFactor",
+    "module": "__main__",
+    "params": {
+      "name": "RandomFactor_20_rs"
+    }
+  }
+}

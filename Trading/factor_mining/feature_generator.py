@@ -299,4 +299,4 @@ class FeatureGenerator:
         new_factors.update(cs_factors)
         
         self.logger.info(f"所有特征生成完成，总共新增因子: {len(new_factors)}")
-        return new_factors    
+        return new_factors
