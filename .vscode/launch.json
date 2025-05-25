@@ -1,0 +1,33 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "调试当前文件",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "backtest",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/freqtrade/freqtrade",
+            "args": [
+                "backtesting",
+                "--config", "/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_futrue_test.json",
+                "--userdir", "/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data",
+                "--strategy", "MyStrategy",
+                "--breakdown", "week",
+                "--strategy-path", "/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/strategies",
+                "--recursive-strategy-search",
+                "--datadir", "/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Data/binance/Vol_top20_futrue_20200101_20250417",
+                "--timerange", "20250101-20250417"
+            ],
+            "console": "integratedTerminal"
+        }
+    ]
+}

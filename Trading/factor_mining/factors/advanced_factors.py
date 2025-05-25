@@ -1,10 +1,10 @@
 import pandas as pd
 import numpy as np
-from factor import Factor
+from .factor import Factor
 
 class PriceVolumeCorrelationFactor(Factor):
     """价格成交量相关性因子：衡量价格和成交量之间的关联程度"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.name = "price_volume_corr_20d"
         self.description = "20日价格与成交量相关性"
@@ -22,7 +22,7 @@ class PriceVolumeCorrelationFactor(Factor):
 
 class VolatilityBreakoutFactor(Factor):
     """波动率突破因子：识别价格波动率突然变化的情况"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.name = "volatility_breakout"
         self.description = "波动率突破信号"
@@ -43,7 +43,7 @@ class VolatilityBreakoutFactor(Factor):
 
 class TrendStrengthFactor(Factor):
     """趋势强度因子：衡量当前价格趋势的强度"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.name = "trend_strength_50d"
         self.description = "50日趋势强度"
@@ -61,7 +61,7 @@ class TrendStrengthFactor(Factor):
 
 class MeanReversionFactor(Factor):
     """均值回归因子：预测价格向均值回归的可能性"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.name = "mean_reversion_10d"
         self.description = "10日均值回归信号"
@@ -80,7 +80,7 @@ class MeanReversionFactor(Factor):
 
 class VolumeWeightedReturnFactor(Factor):
     """成交量加权收益率因子：考虑成交量的收益率指标"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.name = "vw_return_5d"
         self.description = "5日成交量加权收益率"
@@ -98,7 +98,7 @@ class VolumeWeightedReturnFactor(Factor):
 
 class NewsSentimentFactor(Factor):
     """新闻情绪因子：基于新闻文本分析的情绪指标"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.name = "news_sentiment"
         self.description = "新闻情绪因子"
@@ -116,7 +116,7 @@ class NewsSentimentFactor(Factor):
 
 class SeasonalityFactor(Factor):
     """季节性因子：捕捉价格的季节性变化模式"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.name = "seasonality_factor"
         self.description = "季节性因子"
@@ -141,7 +141,7 @@ class SeasonalityFactor(Factor):
 
 class MarketNeutralFactor(Factor):
     """市场中性因子：消除市场整体影响的因子"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.name = "market_neutral_momentum"
         self.description = "市场中性动量因子"
@@ -161,4 +161,4 @@ class MarketNeutralFactor(Factor):
         # 计算市场中性动量：个股动量减去市场动量
         market_neutral_momentum = stock_momentum - market_momentum
         
-        return market_neutral_momentum    
+        return market_neutral_momentum

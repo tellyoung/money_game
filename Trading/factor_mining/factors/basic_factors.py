@@ -1,11 +1,11 @@
 import pandas as pd
 import numpy as np
-from factor import Factor
+from .factor import Factor
 
 
 class MomentumFactor(Factor):
     """动量因子：衡量资产价格的上涨或下跌趋势强度"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.name = "momentum_20d"
         self.description = "20日价格动量"
@@ -18,7 +18,7 @@ class MomentumFactor(Factor):
 
 class VolatilityFactor(Factor):
     """波动率因子：衡量资产价格的波动程度"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.name = "volatility_20d"
         self.description = "20日收益率波动率"
@@ -32,7 +32,7 @@ class VolatilityFactor(Factor):
 
 class VolumeFactor(Factor):
     """成交量因子：衡量市场交易活跃程度"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.name = "volume_change_5d"
         self.description = "5日成交量变化率"
@@ -45,7 +45,7 @@ class VolumeFactor(Factor):
 
 class MACDFactor(Factor):
     """MACD因子：技术分析中常用的趋势跟踪指标"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.name = "macd"
         self.description = "MACD指标"
@@ -66,7 +66,7 @@ class MACDFactor(Factor):
 
 class RSIFactor(Factor):
     """RSI因子：相对强弱指数，衡量价格变动的速度和幅度"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.name = "rsi_14d"
         self.description = "14日相对强弱指数"
@@ -93,7 +93,7 @@ class RSIFactor(Factor):
 
 class BollingerBandsFactor(Factor):
     """布林带因子：衡量价格波动范围和超买超卖情况"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.name = "bollinger_band_width"
         self.description = "布林带宽度"
@@ -118,7 +118,7 @@ class BollingerBandsFactor(Factor):
 
 class KDJFactor(Factor):
     """KDJ因子：随机指标，用于判断超买超卖情况"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.name = "kdj_j"
         self.description = "KDJ指标的J值"
@@ -142,7 +142,7 @@ class KDJFactor(Factor):
 
 class OBVFactor(Factor):
     """能量潮因子：通过成交量变化预测价格走势"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.name = "obv_change_10d"
         self.description = "10日能量潮变化率"
@@ -164,4 +164,4 @@ class OBVFactor(Factor):
         # 计算OBV变化率
         obv_change = obv.pct_change(periods=10)
         
-        return obv_change    
+        return obv_change

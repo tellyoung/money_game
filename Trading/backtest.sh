@@ -5,15 +5,15 @@ conda activate freqtrade
 
 
 # ============  ===========================
-freqtrade backtesting \
---userdir /Users/yutieyang/Documents/yuty_projects/freqtrade/yuty_space/yuty_data \
---datadir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Data/binance/Vol_top20_20250101_20250201 \
---config /Users/yutieyang/Documents/yuty_projects/freqtrade/yuty_space/yuty_data/configs/config_bt.json \
---strategy NewStrategy53_22 \
---strategy-path /Users/yutieyang/Documents/yuty_projects/freqtrade/yuty_space/yuty_strategies/NewStrategy53_22 \
---recursive-strategy-search \
---dry-run-wallet 100 \
---breakdown month week \
+# freqtrade backtesting \
+# --userdir /Users/yutieyang/Documents/yuty_projects/freqtrade/yuty_space/yuty_data \
+# --datadir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Data/binance/Vol_top20_20250101_20250201 \
+# --config /Users/yutieyang/Documents/yuty_projects/freqtrade/yuty_space/yuty_data/configs/config_bt.json \
+# --strategy NewStrategy53_22 \
+# --strategy-path /Users/yutieyang/Documents/yuty_projects/freqtrade/yuty_space/yuty_strategies/NewStrategy53_22 \
+# --recursive-strategy-search \
+# --dry-run-wallet 100 \
+# --breakdown month week \
 
 
 # --datadir /Users/yutieyang/Documents/yuty_projects/freqtrade/yuty_space/yuty_data/data/2024_top10 \
@@ -30,3 +30,15 @@ freqtrade backtesting \
 # --strategy-path /Users/yutieyang/Documents/yuty_projects/freqtrade/yuty_space/freqtrade-strategies/user_data/strategies/futures \
 # --recursive-strategy-search
 
+
+
+
+freqtrade backtesting \
+--config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_futrue_test.json \
+--userdir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data \
+--strategy MyStrategy \
+--breakdown week \
+--strategy-path /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/factor_mining \
+--recursive-strategy-search \
+--datadir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Data/binance/Vol_top20_futrue_20200101_20250417 \
+--timerange 20250101-20250201 

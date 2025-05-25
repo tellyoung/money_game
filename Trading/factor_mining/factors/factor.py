@@ -5,7 +5,7 @@ import numpy as np
 
 class Factor:
     """因子基类，所有因子都应继承自此类"""
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.name = self._get_factor_name()  # 因子名称，默认为类名
         self.description = ""  # 因子描述
         self.category = ""  # 因子类别

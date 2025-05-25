@@ -1,6 +1,9 @@
 # 数据配置
-data_path: "/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Data/binance/Vol_top20_20250101_20250201/BTC_USDT-1h.feather"  # 输入的历史数据路径（Feather格式）
+data_path: "/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Data/binance/Vol_top20_20250101_20250201/BTC_USDT-5m.feather"  # 输入的历史数据路径（Feather格式）
 output_path: "/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/factor_mining/factor_data/factor_data.feather"    # 输出的因子数据路径
+factor_logic_path: "/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/factor_mining/factor_data/factor_logic.json"
+ml_model_path: "/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/factor_mining/factor_data/ml_model.pkl"
+
 
 # 因子模块配置
 factor_modules:
@@ -9,13 +12,13 @@ factor_modules:
 
 # 评估配置
 target_column: "returns"  # 目标预测列，用于评估因子有效性
-top_n_factors: 15        # 选择的最佳因子数量
+top_n_factors: 10        # 选择的最佳因子数量
 
 # 自动因子生成配置
-random_factors_count: 20  # 自动生成的随机因子数量
+random_factors_count: 5  # 自动生成的随机因子数量
 
 # 日志配置
-log_level: INFO  # 日志级别    
+log_level: INFO  # 日志级别
 
 # 缺失值处理配置
 missing_value_config:

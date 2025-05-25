@@ -84,6 +84,7 @@ class FactorMiningEngine:
         for module_name in factor_modules:
             try:
                 module = importlib.import_module(module_name)
+                print("加载factor类:", module_name)
                 # 查找所有Factor子类
                 for name, obj in inspect.getmembers(module):
                     if inspect.isclass(obj) and obj != Factor:
@@ -447,10 +448,11 @@ class FactorMiningEngine:
         except Exception as e:
             self.logger.error(f"保存结果失败: {e}")
 
-    def save_factor_logic(self, filepath: str = "factor_logic.json") -> None:
+    def save_factor_logic(self, filepath: str = None) -> None:
         """
         保存有效因子的生成逻辑（如参数、操作、特征名等）到JSON文件，便于后续复用。
         """
+        filepath = filepath or self.config.get('factor_logic_path', 'factor_logic.json')
         factor_logic = {}
         for name, factor in self.factors.items():
             # 只保存有效因子（可根据self.factor_scores或其它筛选）
@@ -467,11 +469,12 @@ class FactorMiningEngine:
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(factor_logic, f, ensure_ascii=False, indent=2)
         self.logger.info(f"因子逻辑已保存到: {filepath}")
-
-    def load_factor_logic(self, filepath: str = "factor_logic.json") -> None:
+    
+    def load_factor_logic(self, filepath: str = None) -> None:
         """
         加载因子生成逻辑，自动注册到self.factors，便于新数据直接复用。
         """
+        filepath = filepath or self.config.get('factor_logic_path', 'factor_logic.json')
         with open(filepath, "r", encoding="utf-8") as f:
             factor_logic = json.load(f)
         for name, info in factor_logic.items():
@@ -481,15 +484,21 @@ class FactorMiningEngine:
             self.factors[name] = factor
         self.logger.info(f"已加载因子逻辑: {list(self.factors.keys())}")
 
-    def generate_signals(self, factor_name: str, method: str = None, buy_thr=1, sell_thr=-1, window=60) -> pd.Series:
+    def generate_signals(self, factor_name: str, method: str = None, buy_thr=1, sell_thr=-1, window=60, threshold_dict_path=None) -> pd.Series:
         """
         根据因子生成交易信号。
-        method: "zscore"（均值+标准差）, "quantile"（分位数）, "ml"（机器学习模型）
-        如果method为None，则从config读取'signal_method'，否则使用默认"zscore"
+        method: "zscore"/"quantile"
+        支持传入阈值字典路径，自动读取最优阈值。
         """
-        # 优先使用参数，其次config，否则默认zscore
         if method is None:
             method = self.config.get("signal_method", "zscore")
+        # 支持自动读取阈值
+        if threshold_dict_path is not None:
+            with open(threshold_dict_path, "r", encoding="utf-8") as f:
+                thresholds = json.load(f)
+            if factor_name in thresholds:
+                buy_thr = thresholds[factor_name]["buy_thr"]
+                sell_thr = thresholds[factor_name]["sell_thr"]
         factor_series = self.data[factor_name]
         if method == "zscore":
             mean = factor_series.rolling(window).mean()
@@ -506,117 +515,181 @@ class FactorMiningEngine:
             signal[factor_series > q_high] = 1
             signal[factor_series < q_low] = -1
             return signal
-        elif method == "ml":
-            model_path = f"{factor_name}_ml_model.pkl"
-            if not os.path.exists(model_path):
-                self.logger.error(f"未找到模型文件: {model_path}")
-                return pd.Series(0, index=factor_series.index)
-            with open(model_path, "rb") as f:
-                model = pickle.load(f)
-            X = factor_series.values.reshape(-1, 1)
-            preds = model.predict(X)
-            return pd.Series(preds, index=factor_series.index)
         else:
             raise ValueError("不支持的信号生成方法")
-
-    def export_freqtrade_strategy(self, factor_names: list, signal_method: str = "zscore", strategy_path: str = "MyStrategy.py"):
+    
+    def generate_all_signals(self, factor_names: list, method: str = "zscore", buy_thr=1, sell_thr=-1, window=60, ml_model_path=None):
         """
-        根据选定因子和信号方法，自动生成freqtrade策略文件。
-        支持两种模式：
-        - signal_method="zscore"/"quantile"：基于阈值的信号
-        - signal_method="ml"：基于ML模型预测信号（自动加载pkl模型）
+        一次性为所有有效因子生成买卖信号。
+        method: "zscore"/"quantile"/"ml"
+        - 传统方法：每个因子单独生成信号
+        - ML方法：用所有因子联合训练模型，保存模型，预测信号
+        返回：信号字典（仅用于本地分析，实盘/新数据请用模型推理）
         """
-        strategy_code = '''
-            # 自动生成的freqtrade策略
-            from freqtrade.strategy import IStrategy
-            import pandas as pd
-            import numpy as np
-            '''
-        if signal_method == "ml":
-            strategy_code += '''
-import pickle
-import os
-            '''
-        strategy_code += '''
+        signals = {}
+        if method in ["zscore", "quantile"]:
+            for fname in factor_names:
+                signals[fname] = self.generate_signals(factor_name=fname, method=method, buy_thr=buy_thr, sell_thr=sell_thr, window=window)
+        else:
+            raise ValueError("不支持的信号生成方法")
+        return signals
+    
+    def train_ml(self, factor_names: list, ml_model_path=None, train_start=None, train_end=None, val_start=None, val_end=None):
+        """
+        训练ML模型，支持自定义训练/验证时间区间。
+        - factor_names: 用于训练的因子名列表
+        - ml_model_path: 模型保存路径
+        - train_start, train_end, val_start, val_end: 时间区间（字符串或datetime），如'2023-01-01'
+        """
+        from sklearn.ensemble import RandomForestClassifier
+        from sklearn.metrics import accuracy_score, roc_auc_score, confusion_matrix, classification_report
+        import pickle
+        import pandas as pd
+        import numpy as np
+        import os
+        # 1. 数据切分
+        df = self.data.copy()
+        if 'date' in df.columns:
+            df['date'] = pd.to_datetime(df['date'])
+            # 去除时区，统一为tz-naive
+            if hasattr(df['date'].dt, 'tz') and df['date'].dt.tz is not None:
+                df['date'] = df['date'].dt.tz_localize(None)
+        # 训练集mask
+        train_mask = np.ones(len(df), dtype=bool)
+        if train_start is not None:
+            train_start = pd.to_datetime(train_start)
+            if hasattr(train_start, 'tzinfo') and train_start.tzinfo is not None:
+                train_start = train_start.tz_localize(None)
+            train_mask &= (df['date'] >= train_start)
+        if train_end is not None:
+            train_end = pd.to_datetime(train_end)
+            if hasattr(train_end, 'tzinfo') and train_end.tzinfo is not None:
+                train_end = train_end.tz_localize(None)
+            train_mask &= (df['date'] <= train_end)
+        # 验证集mask
+        val_mask = np.ones(len(df), dtype=bool)
+        if val_start is not None:
+            val_start = pd.to_datetime(val_start)
+            if hasattr(val_start, 'tzinfo') and val_start.tzinfo is not None:
+                val_start = val_start.tz_localize(None)
+            val_mask &= (df['date'] >= val_start)
+        if val_end is not None:
+            val_end = pd.to_datetime(val_end)
+            if hasattr(val_end, 'tzinfo') and val_end.tzinfo is not None:
+                val_end = val_end.tz_localize(None)
+            val_mask &= (df['date'] <= val_end)
+        # 验证集去除与训练集重叠部分
+        val_mask &= ~train_mask
+        # 如果未指定验证集区间，则val_mask为~train_mask（训练集以外的数据）
+        if val_start is None and val_end is None:
+            val_mask = ~train_mask
 
-class MyStrategy(IStrategy):
-    timeframe = "1h"
-    minimal_roi = { "0": 0.1 }
-    stoploss = -0.1
-    trailing_stop = False
+        # 2. 特征与标签
+        X = df[factor_names].values
+        y = (df[self.config.get('target_column', 'returns')] > 0).astype(int).values
+        # 去除缺失
+        mask = ~np.isnan(X).any(axis=1) & ~np.isnan(y)
+        X = X[mask]
+        y = y[mask]
+        train_mask = train_mask[mask]
+        val_mask = val_mask[mask]
 
-    def populate_indicators(self, dataframe: pd.DataFrame, metadata: dict) -> pd.DataFrame:
-        # 可在此处添加自定义因子或特征
-        return dataframe
+        # 3. 训练
+        model = RandomForestClassifier(n_estimators=100, random_state=42)
+        X_train, y_train = X[train_mask], y[train_mask]
+        model.fit(X_train, y_train)
+        # 保存模型
+        ml_model_path = ml_model_path or self.config.get('ml_model_path', 'all_factors_ml_model.pkl')
+        report_path_prefix = os.path.join(os.path.dirname(ml_model_path), os.path.splitext(os.path.basename(ml_model_path))[0])
+        with open(ml_model_path, "wb") as f:
+            pickle.dump(model, f)
 
-    def populate_buy_trend(self, dataframe: pd.DataFrame, metadata: dict) -> pd.DataFrame:
-        dataframe["buy"] = 0
-'''
-        if signal_method == "zscore":
-            for factor in factor_names:
-                strategy_code += f'''
-        # {factor} zscore信号
-        mean = dataframe["{factor}"].rolling(60).mean()
-        std = dataframe["{factor}"].rolling(60).std()
-        z = (dataframe["{factor}"] - mean) / (std + 1e-10)
-        dataframe.loc[z > 1, "buy"] = 1
-'''
-        elif signal_method == "quantile":
-            for factor in factor_names:
-                strategy_code += f'''
-                        # {factor} quantile信号
-                        q_high = dataframe["{factor}"].rolling(60).quantile(0.8)
-                        q_low = dataframe["{factor}"].rolling(60).quantile(0.2)
-                        dataframe.loc[dataframe["{factor}"] > q_high, "buy"] = 1
-                        dataframe.loc[dataframe["{factor}"] < q_low, "buy"] = -1
-                '''
-        elif signal_method == "ml":
-            for factor in factor_names:
-                strategy_code += f'''
-                                # {factor} ML模型信号
-                                model_path = "{factor}_ml_model.pkl"
-                                if os.path.exists(model_path):
-                                    with open(model_path, "rb") as f:
-                                        model = pickle.load(f)
-                                    X = dataframe["{factor}"].values.reshape(-1, 1)
-                                    preds = model.predict(X)
-                                    dataframe["ml_pred_{factor}"] = preds
-                                    dataframe.loc[dataframe["ml_pred_{factor}"] == 1, "buy"] = 1
-                        '''
-        strategy_code += '''
-                                return dataframe
+        # 4. 评估
+        def eval_and_save(X, y, prefix):
+            preds = model.predict(X)
+            acc = accuracy_score(y, preds)
+            try:
+                auc = roc_auc_score(y, model.predict_proba(X)[:,1])
+            except Exception:
+                auc = None
+            cm = confusion_matrix(y, preds)
+            report = classification_report(y, preds, output_dict=True)
+            feat_imp = dict(zip(factor_names, model.feature_importances_))
+            # 新增召回率和F1
+            recall = report['1']['recall'] if '1' in report else None
+            f1 = report['1']['f1-score'] if '1' in report else None
+            # 日志
+            self.logger.info(f"ML模型{prefix}准确率: {acc:.4f}, AUC: {auc if auc is not None else 'N/A'}, Recall: {recall if recall is not None else 'N/A'}, F1: {f1 if f1 is not None else 'N/A'}")
+            self.logger.info(f"{prefix}混淆矩阵:\n{cm}")
+            self.logger.info(f"{prefix}特征重要性: {feat_imp}")
+            # 保存
+            pd.DataFrame({"accuracy":[acc], "auc":[auc], "recall":[recall], "f1":[f1]}).to_csv(f"{report_path_prefix}_{prefix}_score.csv", index=False)
+            pd.DataFrame(cm).to_csv(f"{report_path_prefix}_{prefix}_confusion_matrix.csv", index=False)
+            pd.DataFrame(report).to_csv(f"{report_path_prefix}_{prefix}_classification_report.csv")
+            pd.Series(feat_imp).to_csv(f"{report_path_prefix}_{prefix}_feature_importance.csv")
+        
+        # 训练集评估
+        eval_and_save(X_train, y_train, "train")
+        # 验证集评估
+        if val_mask.sum() > 0:
+            X_val, y_val = X[val_mask], y[val_mask]
+            eval_and_save(X_val, y_val, "val")
+        return model
 
-                            def populate_sell_trend(self, dataframe: pd.DataFrame, metadata: dict) -> pd.DataFrame:
-                                dataframe["sell"] = 0
-                        '''
-        if signal_method == "zscore":
-            for factor in factor_names:
-                strategy_code += f'''
-                                mean = dataframe["{factor}"].rolling(60).mean()
-                                std = dataframe["{factor}"].rolling(60).std()
-                                z = (dataframe["{factor}"] - mean) / (std + 1e-10)
-                                dataframe.loc[z < -1, "sell"] = 1
-                        '''
-        elif signal_method == "quantile":
-            for factor in factor_names:
-                strategy_code += f'''
-                        q_high = dataframe["{factor}"].rolling(60).quantile(0.8)
-                        q_low = dataframe["{factor}"].rolling(60).quantile(0.2)
-                        dataframe.loc[dataframe["{factor}"] < q_low, "sell"] = 1
-                '''
-        elif signal_method == "ml":
-            for factor in factor_names:
-                strategy_code += f'''
-                        # {factor} ML模型信号
-                        if "ml_pred_{factor}" in dataframe.columns:
-                            dataframe.loc[dataframe["ml_pred_{factor}"] == -1, "sell"] = 1
-                '''
-        strategy_code += '''
-                return dataframe
-        '''
-        with open(strategy_path, "w", encoding="utf-8") as f:
-            f.write(strategy_code)
-        self.logger.info(f"freqtrade策略已导出到: {strategy_path}")
+    def find_best_signal_thresholds(self, factor_names, method="zscore", window=60, metric="sharpe", save_path="best_signal_thresholds.json"):
+        """
+        针对每个因子的分布自适应生成阈值网格，自动遍历买卖阈值组合，寻找最优阈值，并保存。
+        metric: "sharpe"/"return"/"ic"
+        """
+        best_thresholds = {}
+        for fname in factor_names:
+            series = self.data[fname].dropna()
+            best_score = -np.inf
+            best_buy = None
+            best_sell = None
+            # 针对不同分布自适应生成阈值网格
+            if method == "zscore":
+                mean = series.mean()
+                std = series.std()
+                # 以均值±N*std为中心，N自适应（覆盖99%分布）
+                N = max(2, min(4, int((series.max() - series.min()) / (std + 1e-8))))
+                buy_range = np.arange(mean + 0.5*std, mean + N*std, std*0.1)
+                sell_range = np.arange(mean - N*std, mean - 0.5*std, std*0.1)
+            elif method == "quantile":
+                # 用分位数做阈值
+                quantiles = np.arange(0.7, 0.99, 0.05)
+                buy_range = [series.quantile(q) for q in quantiles]
+                sell_range = [series.quantile(1-q) for q in quantiles]
+            else:
+                # 默认用分位数
+                quantiles = np.arange(0.7, 0.99, 0.05)
+                buy_range = [series.quantile(q) for q in quantiles]
+                sell_range = [series.quantile(1-q) for q in quantiles]
+            for buy_thr in buy_range:
+                for sell_thr in sell_range:
+                    if buy_thr <= sell_thr:
+                        continue  # 保证买阈值大于卖阈值
+                    signal = self.generate_signals(factor_name=fname, method=method, buy_thr=buy_thr, sell_thr=sell_thr, window=window)
+                    ret = (signal.shift(1) * self.data[self.config.get('target_column', 'returns')]).fillna(0)
+                    if metric == "sharpe":
+                        score = ret.mean() / (ret.std() + 1e-8)
+                    elif metric == "return":
+                        score = ret.sum()
+                    elif metric == "ic":
+                        score = signal.corr(self.data[self.config.get('target_column', 'returns')])
+                    else:
+                        score = 0
+                    if score > best_score:
+                        best_score = score
+                        best_buy = float(buy_thr)
+                        best_sell = float(sell_thr)
+            best_thresholds[fname] = {"buy_thr": best_buy, "sell_thr": best_sell, "score": best_score}
+            self.logger.info(f"{fname} 最优阈值: buy={best_buy}, sell={best_sell}, {metric}={best_score:.4f}")
+        with open(save_path, "w", encoding="utf-8") as f:
+            json.dump(best_thresholds, f, ensure_ascii=False, indent=2)
+        self.logger.info(f"所有因子最优阈值已保存到: {save_path}")
+        return best_thresholds
+
 
 class FactorGenerator:
     """因子自动生成器，用于生成新的候选因子"""
@@ -685,8 +758,9 @@ class FactorGenerator:
 
 
 if __name__ == "__main__":
-    # 创建因子挖掘引擎
-    engine = FactorMiningEngine(config_path="/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/factor_mining/config.yaml")
+    # config_path 优先级：环境变量 > 代码参数 > 默认
+    config_path = os.environ.get("FACTOR_MINING_CONFIG") or "/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/factor_mining/config.yaml"
+    engine = FactorMiningEngine(config_path=config_path)
     
     # 加载数据
     engine.load_data()
@@ -695,7 +769,7 @@ if __name__ == "__main__":
     engine.discover_factors()
     
     # 生成自动因子
-    generator = FactorGenerator()
+    generator = FactorGenerator(config=engine.config)
     random_factors = generator.generate_random_factors(engine.data, n_factors=20)
     
     # 注册自动生成的因子
@@ -720,36 +794,42 @@ if __name__ == "__main__":
     engine.evaluate_factors()
     
     # 评估因子（机器学习）
-    ml_evaluator = engine.evaluate_factors_ml()
+    # ml_evaluator = engine.evaluate_factors_ml()
+    # print(f"机器学习评估最佳因子: {engine.consensus_factors}")
+
     
     # 分析因子时效性
     timeliness = engine.analyze_factor_timeliness()
     
     # 选择最佳因子（结合传统和机器学习评估）
-    best_factors = engine.select_best_factors(top_n=15)
-    
+    best_factors = engine.select_best_factors(top_n=20)
+
+    # === 自动寻找并保存每个因子的最佳买卖阈值 ===
+    # best_thresholds = engine.find_best_signal_thresholds(best_factors, method="zscore", window=60, metric="sharpe", save_path="best_signal_thresholds.json")
+    # engine.logger.info(f"所有因子最优阈值: {best_thresholds}")
+
     # 保存结果
     engine.save_results()
 
     # === 保存有效因子的生成逻辑，便于复用 ===
-    engine.save_factor_logic(filepath="factor_logic.json")  # 保存
+    engine.save_factor_logic()  # 路径从config读取
     engine.logger.info("有效因子逻辑已保存。")
 
     # === 新增：演示如何加载保存的因子逻辑（可用于新数据/部署） ===
-    engine.load_factor_logic(filepath="factor_logic.json")
+    engine.load_factor_logic()  # 路径从config读取
     engine.logger.info("已加载因子逻辑，可直接用于新数据。")
 
-    # === 新增：生成交易信号（以zscore方法为例） ===
-    # 这里只对最佳因子中的第一个做演示，实际可批量处理
-    signal = engine.generate_signals(factor_name=best_factors[0], method="zscore", buy_thr=1, sell_thr=-1, window=60)
-    engine.logger.info(f"信号样例（前10行）:\n{signal.head(10)}")
+    # === 批量生成所有有效因子的买卖信号 ===
+    # all_signals = engine.generate_all_signals(best_factors, method="zscore", buy_thr=1, sell_thr=-1, window=60, save_signals_path="all_signals_zscore.csv")
+    # engine.logger.info(f"所有因子zscore信号样例（前5行）:\n{pd.DataFrame(all_signals).head()}")
 
-    # === 新增：导出freqtrade策略文件 ===
-    # 可根据实际需求选择因子和信号方法
-    engine.export_freqtrade_strategy(factor_names=best_factors[:3], signal_method="ml", strategy_path="MyStrategy.py")
-    engine.logger.info("freqtrade策略文件已生成。")
+    # ML方法（联合所有有效因子）
+    all_signals_ml = engine.train_ml(best_factors, 
+                                     train_start="2025-01-01", 
+                                     train_end="2025-01-20", 
+                                     val_start="2025-01-20", 
+                                     val_end="2025-02-01")
 
     print("因子挖掘完成!")
     print(f"最佳因子: {best_factors}")
-    print(f"机器学习评估最佳因子: {engine.consensus_factors}")
 
