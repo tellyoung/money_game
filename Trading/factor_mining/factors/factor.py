@@ -19,7 +19,7 @@ class Factor:
         raise NotImplementedError("子类必须实现generate方法")
     
 
-class DynamicFactor(Factor):
+class ParametricDynamicFactor(Factor):
     """动态生成的因子类，支持参数化构造，便于序列化/反序列化"""
     def __init__(self, name=None, operation=None, features=None, window=None, lag=None):
         super().__init__()
@@ -52,7 +52,6 @@ class DynamicFactor(Factor):
                     else:
                         # 避免除以零
                         base_feature = base_feature / (data[feature] + 1e-10)
-        
         # 应用操作
         if self.operation == 'rolling_mean':
             factor_value = base_feature.rolling(window=self.window).mean()
@@ -71,3 +70,36 @@ class DynamicFactor(Factor):
         
         return factor_value
 
+
+class DynamicFactor(Factor):
+    def __init__(self, name, operation, features, window=None, lag=None):
+        super().__init__()
+        self.name = name
+        self.operation = operation
+        self.features = features
+        self.window = window
+        self.lag = lag
+        self.category = "auto_generated"
+        self.description = f"自动生成的特征: {name}"
+
+    def generate(self, data: pd.DataFrame) -> pd.Series:
+        # 支持常见操作，可扩展
+        if self.operation == 'rolling_mean':
+            return data[self.features[0]].rolling(self.window).mean()
+        elif self.operation == 'rolling_std':
+            return data[self.features[0]].rolling(self.window).std()
+        elif self.operation == 'pct_change':
+            return data[self.features[0]].pct_change(self.lag or 1)
+        elif self.operation == 'lag':
+            return data[self.features[0]].shift(self.lag or 1)
+        elif self.operation == 'rank':
+            return data[self.features[0]].rank(pct=True)
+        elif self.operation == 'zscore':
+            mean = data[self.features[0]].rolling(self.window).mean()
+            std = data[self.features[0]].rolling(self.window).std()
+            return (data[self.features[0]] - mean) / (std + 1e-10)
+        # 多特征加权平均举例
+        elif self.operation == 'mean':
+            return data[self.features].mean(axis=1)
+        else:
+            return pd.Series(0, index=data.index)

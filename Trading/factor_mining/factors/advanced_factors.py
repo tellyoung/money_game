@@ -127,11 +127,10 @@ class SeasonalityFactor(Factor):
         if 'date' in data.columns:
             data['month'] = pd.to_datetime(data['date']).dt.month
         else:
-            # 如果没有日期列，使用索引作为日期
             data['month'] = pd.to_datetime(data.index).dt.month
             
-        # 计算每月平均收益率
-        monthly_returns = data.groupby('month')['close'].pct_change().mean()
+        # 计算每月平均收益率（修正：先分组算pct_change，再分组算均值）
+        monthly_returns = data.groupby('month')['close'].pct_change().groupby(data['month']).mean()
         
         # 为每个数据点分配对应月份的平均收益率
         seasonality = data['month'].map(monthly_returns)

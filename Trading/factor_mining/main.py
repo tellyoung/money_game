@@ -10,7 +10,7 @@ import numpy as np
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import roc_auc_score
 import warnings
-from factors.factor import Factor,DynamicFactor
+from factors.factor import Factor, ParametricDynamicFactor, DynamicFactor
 warnings.filterwarnings('ignore')  # 忽略警告
 
 # 新增导入
@@ -400,23 +400,16 @@ class FactorMiningEngine:
         # 将新特征添加到数据中
         for feature_name, feature_data in new_features.items():
             self.data[feature_name] = feature_data
-            
-            # 创建对应的Factor类
-            class DynamicFactor(Factor):
-                def __init__(self):
-                    super().__init__()
-                    self.name = feature_name
-                    self.description = f"自动生成的特征: {feature_name}"
-                    self.category = "auto_generated"
-                    
-                def generate(self, data: pd.DataFrame) -> pd.Series:
-                    return data[feature_name]
-                    
-            # 注册新因子
-            self.factors[feature_name] = DynamicFactor()
-            
+            # 假设feature_generator能返回操作、特征、窗口等参数
+            # 这里以operation/features/window/lag为例，实际应从feature_generator获得
+            params = feature_generator.get_feature_params(feature_name) if hasattr(feature_generator, 'get_feature_params') else {}
+            operation = params.get('operation', 'mean')
+            features = params.get('features', [feature_name])
+            window = params.get('window', None)
+            lag = params.get('lag', None)
+            factor = DynamicFactor(feature_name, operation, features, window, lag)
+            self.factors[feature_name] = factor
         self.logger.info(f"新特征生成完成，新增因子数量: {len(new_features)}")
-        
         return list(new_features.keys())
     
     def save_results(self, output_path: str = None) -> None:
@@ -455,17 +448,31 @@ class FactorMiningEngine:
         filepath = filepath or self.config.get('factor_logic_path', 'factor_logic.json')
         factor_logic = {}
         for name, factor in self.factors.items():
-            # 只保存有效因子（可根据self.factor_scores或其它筛选）
             if hasattr(factor, "__dict__"):
                 logic = factor.__dict__.copy()
-                # 移除不必要的内容
                 logic.pop("description", None)
                 logic.pop("category", None)
-                factor_logic[name] = {
-                    "class": factor.__class__.__name__,
-                    "module": factor.__class__.__module__,
-                    "params": logic
-                }
+                cls_name = factor.__class__.__name__
+                module_name = factor.__class__.__module__
+                # 针对不同动态因子类自动适配
+                if cls_name in ("DynamicFactor", "ParametricDynamicFactor"):
+                    factor_logic[name] = {
+                        "class": cls_name,
+                        "module": module_name,
+                        "params": {
+                            "name": factor.name,
+                            "operation": getattr(factor, "operation", None),
+                            "features": getattr(factor, "features", None),
+                            "window": getattr(factor, "window", None),
+                            "lag": getattr(factor, "lag", None)
+                        }
+                    }
+                else:
+                    factor_logic[name] = {
+                        "class": cls_name,
+                        "module": module_name,
+                        "params": logic
+                    }
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(factor_logic, f, ensure_ascii=False, indent=2)
         self.logger.info(f"因子逻辑已保存到: {filepath}")
@@ -754,7 +761,7 @@ class FactorGenerator:
         lag = np.random.randint(1, 10)
         
         # 返回全局定义的 DynamicFactor 类实例
-        return DynamicFactor(name, operation, features, window, lag)
+        return ParametricDynamicFactor(name, operation, features, window, lag)
 
 
 if __name__ == "__main__":
@@ -832,4 +839,10 @@ if __name__ == "__main__":
 
     print("因子挖掘完成!")
     print(f"最佳因子: {best_factors}")
+
+    # === 保存best_factors到文件 ===
+    with open("/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/factor_mining/factor_data/best_factors.json", "w", encoding="utf-8") as f:
+        json.dump(best_factors, f, ensure_ascii=False, indent=2)
+    print("best_factors已保存到 best_factors.json")
+
 
