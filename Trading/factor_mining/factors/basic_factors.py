@@ -149,8 +149,8 @@ class OBVFactor(Factor):
         self.category = "volume_indicator"
         
     def generate(self, data: pd.DataFrame) -> pd.Series:
-        # 初始化OBV (On-Balance Volume)
-        obv = pd.Series(0, index=data.index)
+        # 初始化OBV (On-Balance Volume)，用float类型避免dtype警告
+        obv = pd.Series(0.0, index=data.index, dtype='float64')
         
         # 计算OBV：如果当日收盘价高于前一日，则将当日成交量加入OBV；否则减去
         for i in range(1, len(data)):

@@ -21,9 +21,24 @@ class MyStrategy(IStrategy):
     这样策略类就能无缝衔接你的因子挖掘pipeline，直接用于回测。
     """
     INTERFACE_VERSION = 3
-    minimal_roi = {"0": 0.05}
-    stoploss = -0.1
-    timeframe = '5m'
+    can_short = True
+    timeframe = "5m"
+
+    # ROI table (hyperoptable)
+    minimal_roi = {
+        "0": 0.05,  # Default values, will be overridden by hyperopt
+        "30": 0.03,
+        "60": 0.01
+    }
+
+    # Stoploss (hyperoptable)
+    stoploss = -0.02  # Default value, will be overridden by hyperopt
+
+    # Trailing stop:
+    trailing_stop = True
+    trailing_stop_positive = 0.05
+    trailing_stop_positive_offset = 0.1
+    trailing_only_offset_is_reached = False
 
     def __init__(self, config: Dict[str, Any]) -> None:
         super().__init__(config)
@@ -33,6 +48,11 @@ class MyStrategy(IStrategy):
         self.factors = {}
         self.best_factor_logic_path = os.path.join("/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/factor_mining/factor_data/factor_logic.json")
         self.load_factor_logic(self.best_factor_logic_path)
+
+        # 加载best_factors顺序
+        best_factors_path = os.path.join("/Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/factor_mining/factor_data/best_factors.json")
+        with open(best_factors_path, 'r', encoding='utf-8') as f:
+            self.best_factors = json.load(f)
 
         # 预加载联合多因子ML模型（如有）
         self.all_factors_ml_model = self.load_factors_ml_model()
@@ -115,8 +135,7 @@ class MyStrategy(IStrategy):
             except Exception as e:
                 self.logger.error(f"因子生成失败: {name}, 错误: {e}")
                 dataframe[name] = 0
-        # 最终按原始顺序排列
-        dataframe = dataframe[[col for col in self.factor_order if col in dataframe.columns]].copy()
+
         return dataframe
 
     def generate_signal(self, dataframe: pd.DataFrame, factor_name: str = None, method: str = 'zscore', buy_thr=1, sell_thr=-1, window=60, use_all_factors=False):
@@ -124,13 +143,24 @@ class MyStrategy(IStrategy):
         支持单因子和多因子ML推理。use_all_factors=True时，使用联合ML模型。
         """
         if use_all_factors and self.all_factors_ml_model is not None:
-            # 多因子ML推理
-            X = dataframe.values
-            preds = self.all_factors_ml_model.predict(X)
+            # 多因子ML推理，严格按best_factors顺序取特征
+            X = dataframe[self.best_factors].values
+            X = np.nan_to_num(X, nan=0.0, posinf=0.0, neginf=0.0)
+            # 置信度阈值
+            prob_thr = 0.9
+            if hasattr(self.all_factors_ml_model, 'predict_proba'):
+                probas = self.all_factors_ml_model.predict_proba(X)
+                preds = self.all_factors_ml_model.predict(X)
+                preds = np.where(preds == 0, -1, preds)
+
+                # 只在最大概率大于阈值时才输出预测，否则为0
+                max_proba = np.max(probas, axis=1)
+                preds = np.where(max_proba >= prob_thr, preds, 0)
+            else:
+                preds = self.all_factors_ml_model.predict(X)
             return pd.Series(preds, index=dataframe.index)
         if factor_name is None:
             return pd.Series(0, index=dataframe.index)
-
 
     def populate_entry_trend(self, dataframe: pd.DataFrame, metadata: dict) -> pd.DataFrame:
         # 支持ML联合信号和单因子信号
@@ -152,21 +182,3 @@ class MyStrategy(IStrategy):
 
 
 
-"""
-import pickle
-import pandas as pd
-
-# 1. 加载新数据并生成所有best_factors特征（用你的engine流程）
-# engine.data = pd.read_feather("新数据.feather")
-# engine.load_factor_logic()
-# engine.generate_factors(parallel=False)
-X_new = engine.data[best_factors].values
-
-# 2. 加载模型
-with open("all_factors_ml_model.pkl", "rb") as f:
-    model = pickle.load(f)
-
-# 3. 预测买卖信号
-pred_signal = model.predict(X_new)  # 0/1 或 -1/1
-engine.data["ml_signal"] = pred_signal
-"""

@@ -793,9 +793,12 @@ if __name__ == "__main__":
     # 处理缺失值（可选，evaluate_factors中也可以设置）
     engine.handle_missing_values(method='ffill')
 
+    """
+        todo: 因子逻辑加载存在问题
+    """
     # 基于现有因子生成新特征
-    new_features = engine.generate_new_features()
-    engine.logger.info(f"生成的新特征: {new_features[:10]}（共{len(new_features)}个）")
+    # new_features = engine.generate_new_features()
+    # engine.logger.info(f"生成的新特征: {new_features[:10]}（共{len(new_features)}个）")
 
     # 评估因子（传统方法）
     engine.evaluate_factors()
@@ -804,7 +807,6 @@ if __name__ == "__main__":
     # ml_evaluator = engine.evaluate_factors_ml()
     # print(f"机器学习评估最佳因子: {engine.consensus_factors}")
 
-    
     # 分析因子时效性
     timeliness = engine.analyze_factor_timeliness()
     
