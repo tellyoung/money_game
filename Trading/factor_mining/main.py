@@ -140,7 +140,7 @@ class FactorMiningEngine:
             return
             
         # 计算简单收益率
-        self.data[f'returns'] = self.data[price_col].pct_change(period)
+        self.data[f'returns'] = self.data[price_col].pct_change(period).shift(-1)
         
         # 可以添加其他类型的收益率计算
         self.logger.info(f"已计算 {period} 天收益率，内容: returns_{period}d")

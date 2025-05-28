@@ -26,18 +26,18 @@ class MyStrategy(IStrategy):
 
     # ROI table (hyperoptable)
     minimal_roi = {
-        "0": 0.05,  # Default values, will be overridden by hyperopt
-        "30": 0.03,
+        "0": 0.03,  # Default values, will be overridden by hyperopt
+        "30": 0.02,
         "60": 0.01
     }
 
     # Stoploss (hyperoptable)
-    stoploss = -0.02  # Default value, will be overridden by hyperopt
+    stoploss = -0.01  # Default value, will be overridden by hyperopt
 
     # Trailing stop:
     trailing_stop = True
     trailing_stop_positive = 0.05
-    trailing_stop_positive_offset = 0.1
+    trailing_stop_positive_offset = 0.06
     trailing_only_offset_is_reached = False
 
     def __init__(self, config: Dict[str, Any]) -> None:
@@ -147,7 +147,7 @@ class MyStrategy(IStrategy):
             X = dataframe[self.best_factors].values
             X = np.nan_to_num(X, nan=0.0, posinf=0.0, neginf=0.0)
             # 置信度阈值
-            prob_thr = 0.9
+            prob_thr = 0.8
             if hasattr(self.all_factors_ml_model, 'predict_proba'):
                 probas = self.all_factors_ml_model.predict_proba(X)
                 preds = self.all_factors_ml_model.predict(X)
