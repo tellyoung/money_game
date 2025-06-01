@@ -1,7 +1,7 @@
 .idea/
 .DS_Store
 .ipynb_checkpoints
-Data/
+Datasets/
 factor_data/
 *.log
 
@@ -11,3 +11,4 @@ Trading/user_data/hyperopt_results/
 Trading4Real/
 backtest_results/
 __pycache__/
+mlruns/
