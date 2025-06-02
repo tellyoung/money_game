@@ -13,12 +13,12 @@ conda activate freqtrade
 
 # download future data
 freqtrade download-data \
-    --config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_test_futrue_IntradayMomentum.json \
+    --config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_test_spot.json \
     --userdir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data \
-    --datadir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Data/binance/Vol_top20_futrue_20250418_20250517 \
+    --datadir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Datasets/binance/Vol_top20_futrue_202501_202505 \
 	--exchange binance \
-	--timerange 20250418-20250517 \
-	--timeframes 5m 15m 1h 8h --prepend 
+	--timerange 20241210-20250601 \
+	--timeframes 5m 1h 8h --prepend 
     # 1m 5m 15m 1h
     # --prepend 
 

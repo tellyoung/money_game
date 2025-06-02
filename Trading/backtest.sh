@@ -34,11 +34,11 @@ conda activate freqtrade
 
 
 freqtrade backtesting \
---config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_futrue_test.json \
+--config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_test_spot.json \
 --userdir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data \
---strategy MyStrategy \
---breakdown week \
---strategy-path /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/factor_mining \
+--strategy open01 \
+--breakdown week month \
+--strategy-path /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/strategies \
 --recursive-strategy-search \
---datadir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Data/binance/Vol_top20_futrue_20200101_20250417 \
---timerange 20250101-20250201 
+--datadir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Datasets/binance/Vol_top20_futrue_202501_202505 \
+--timerange 20250101-20250601 
