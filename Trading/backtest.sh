@@ -36,7 +36,7 @@ conda activate freqtrade
 freqtrade backtesting \
 --config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_test_spot.json \
 --userdir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data \
---strategy open01 \
+--strategy open01_yuty \
 --breakdown week month \
 --strategy-path /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/strategies \
 --recursive-strategy-search \

@@ -1,184 +1,222 @@
-import freqtrade.vendor.qtpylib.indicators as qtpylib
-import numpy as np
-from functools import reduce
-import talib.abstract as ta
-from freqtrade.strategy.interface import IStrategy
-from freqtrade.strategy import merge_informative_pair, DecimalParameter, stoploss_from_open, RealParameter,IntParameter,informative
-from pandas import DataFrame, Series
-from datetime import datetime
-import math
-import logging
-from freqtrade.persistence import Trade
-import pandas_ta as pta
-from technical.indicators import RMI
+# 导入所需的库和模块
+import freqtrade.vendor.qtpylib.indicators as qtpylib  # Freqtrade的指标库，用于计算技术指标
+import numpy as np  # 数值计算库，用于处理数组和数学运算
+from functools import reduce  # 函数工具库，用于函数式编程
+import talib.abstract as ta  # TA-Lib库，用于技术指标计算
+from freqtrade.strategy.interface import IStrategy  # Freqtrade策略接口，用于定义交易策略
+from freqtrade.strategy import merge_informative_pair, DecimalParameter, stoploss_from_open, RealParameter, IntParameter, informative  # Freqtrade策略相关工具
+from pandas import DataFrame, Series  # Pandas库，用于数据处理
+from datetime import datetime  # 日期时间处理模块，用于时间相关操作
+import math  # 数学计算模块，用于复杂数学运算
+import logging  # 日志记录模块，用于记录日志信息
+from freqtrade.persistence import Trade  # Freqtrade交易持久化模块，用于管理交易数据
+import pandas_ta as pta  # Pandas TA库，用于技术分析
+from technical.indicators import RMI  # 自定义技术指标模块，用于计算RMI指标
 
-logger = logging.getLogger(__name__)
+# 设置日志记录器
+logger = logging.getLogger(__name__)  # 创建日志记录器，用于记录策略运行信息
 
+# 定义EWO指标计算函数
 def ewo(dataframe, sma1_length=5, sma2_length=35):
-    sma1 = ta.EMA(dataframe, timeperiod=sma1_length)
-    sma2 = ta.EMA(dataframe, timeperiod=sma2_length)
-    smadif = (sma1 - sma2) / dataframe['close'] * 100
+    """
+    计算EWO指标（Elder's Wave Oscillator）
+
+    :param dataframe: DataFrame 包含OHLC数据的DataFrame
+    :param sma1_length: int 短期EMA的时间周期
+    :param sma2_length: int 长期EMA的时间周期
+    :return: Series EWO指标值
+    """
+    sma1 = ta.EMA(dataframe, timeperiod=sma1_length)  # 计算短期EMA
+    sma2 = ta.EMA(dataframe, timeperiod=sma2_length)  # 计算长期EMA
+    smadif = (sma1 - sma2) / dataframe['close'] * 100  # 计算EWO值，表示短期和长期EMA的差值占收盘价的百分比
     return smadif
 
+# 定义DCA（Dollar Cost Averaging）百分比变化计算函数
 def top_percent_change_dca(dataframe: DataFrame, length: int) -> float:
-        """
-        Percentage change of the current close from the range maximum Open price
+    """
+    计算当前收盘价与过去一段时间内最大开盘价的百分比变化
 
-        :param dataframe: DataFrame The original OHLC dataframe
-        :param length: int The length to look back
-        """
-        if length == 0:
-            return (dataframe['open'] - dataframe['close']) / dataframe['close']
-        else:
-            return (dataframe['open'].rolling(length).max() - dataframe['close']) / dataframe['close']
+    :param dataframe: DataFrame 包含OHLC数据的DataFrame
+    :param length: int 回溯的时间长度
+    :return: float 百分比变化值
+    """
+    if length == 0:
+        # 如果回溯长度为0，计算当前开盘价与收盘价的百分比变化
+        return (dataframe['open'] - dataframe['close']) / dataframe['close']
+    else:
+        # 否则，计算过去length时间内最大开盘价与当前收盘价的百分比变化
+        return (dataframe['open'].rolling(length).max() - dataframe['close']) / dataframe['close']
 
+# 定义另一个EWO指标计算函数
 def EWO(dataframe, ema_length=5, ema2_length=3):
-    df = dataframe.copy()
-    ema1 = ta.EMA(df, timeperiod=ema_length)
-    ema2 = ta.EMA(df, timeperiod=ema2_length)
-    emadif = (ema1 - ema2) / df['close'] * 100
+    """
+    计算EWO指标（Elder's Wave Oscillator），与上一个函数类似但参数不同
+
+    :param dataframe: DataFrame 包含OHLC数据的DataFrame
+    :param ema_length: int 短期EMA的时间周期
+    :param ema2_length: int 长期EMA的时间周期
+    :return: Series EWO指标值
+    """
+    df = dataframe.copy()  # 创建DataFrame副本，避免修改原始数据
+    ema1 = ta.EMA(df, timeperiod=ema_length)  # 计算短期EMA
+    ema2 = ta.EMA(df, timeperiod=ema2_length)  # 计算长期EMA
+    emadif = (ema1 - ema2) / df['close'] * 100  # 计算EWO值，表示短期和长期EMA的差值占收盘价的百分比
     return emadif
 
+# 定义Williams %R指标计算函数
 def williams_r(dataframe: DataFrame, period: int = 14) -> Series:
-    """Williams %R, or just %R, is a technical analysis oscillator showing the current closing price in relation to the high and low
-        of the past N days (for a given N). It was developed by a publisher and promoter of trading materials, Larry Williams.
-        Its purpose is to tell whether a stock or commodity market is trading near the high or the low, or somewhere in between,
-        of its recent trading range.
-        The oscillator is on a negative scale, from −100 (lowest) up to 0 (highest).
     """
+    计算Williams %R指标，用于评估当前收盘价相对于过去N天的高低点
 
-    highest_high = dataframe["high"].rolling(center=False, window=period).max()
-    lowest_low = dataframe["low"].rolling(center=False, window=period).min()
+    :param dataframe: DataFrame 包含OHLC数据的DataFrame
+    :param period: int 回溯的时间周期
+    :return: Series Williams %R指标值
+    """
+    highest_high = dataframe['high'].rolling(center=False, window=period).max()  # 计算过去N天的最高价
+    lowest_low = dataframe['low'].rolling(center=False, window=period).min()  # 计算过去N天的最低价
 
     WR = Series(
-        (highest_high - dataframe["close"]) / (highest_high - lowest_low),
-        name="{0} Williams %R".format(period),
-        )
+        (highest_high - dataframe['close']) / (highest_high - lowest_low),  # 计算当前收盘价相对于高低点的百分比
+        name="{0} Williams %R".format(period),  # 设置指标名称
+    )
 
-    return WR * -100
+    return WR * -100  # 将结果转换为负值范围（-100到0）
 
+# 定义VWAP（加权平均价格）及其上下标准差范围计算函数
 def VWAPB(dataframe, window_size=20, num_of_std=1):
-    df = dataframe.copy()
-    df['vwap'] = qtpylib.rolling_vwap(df,window=window_size)
-    rolling_std = df['vwap'].rolling(window=window_size).std()
-    df['vwap_low'] = df['vwap'] - (rolling_std * num_of_std)
-    df['vwap_high'] = df['vwap'] + (rolling_std * num_of_std)
+    """
+    计算VWAP及其上下标准差范围
+
+    :param dataframe: DataFrame 包含OHLC数据的DataFrame
+    :param window_size: int 滑动窗口大小
+    :param num_of_std: int 标准差倍数
+    :return: Tuple 包含VWAP的低值、中值和高值
+    """
+    df = dataframe.copy()  # 创建DataFrame副本，避免修改原始数据
+    df['vwap'] = qtpylib.rolling_vwap(df, window=window_size)  # 计算VWAP
+    rolling_std = df['vwap'].rolling(window=window_size).std()  # 计算VWAP的标准差
+    df['vwap_low'] = df['vwap'] - (rolling_std * num_of_std)  # 计算VWAP的低值
+    df['vwap_high'] = df['vwap'] + (rolling_std * num_of_std)  # 计算VWAP的高值
     return df['vwap_low'], df['vwap'], df['vwap_high']
 
+# 定义布林带计算函数
 def bollinger_bands(stock_price, window_size, num_of_std):
-    rolling_mean = stock_price.rolling(window=window_size).mean()
-    rolling_std = stock_price.rolling(window=window_size).std()
-    lower_band = rolling_mean - (rolling_std * num_of_std)
-    return np.nan_to_num(rolling_mean), np.nan_to_num(lower_band)
+    """
+    计算布林带的中值和低值
 
+    :param stock_price: Series 股票价格序列
+    :param window_size: int 滑动窗口大小
+    :param num_of_std: int 标准差倍数
+    :return: Tuple 包含布林带的中值和低值
+    """
+    rolling_mean = stock_price.rolling(window=window_size).mean()  # 计算滑动平均值
+    rolling_std = stock_price.rolling(window=window_size).std()  # 计算滑动标准差
+    lower_band = rolling_mean - (rolling_std * num_of_std)  # 计算布林带的低值
+    return np.nan_to_num(rolling_mean), np.nan_to_num(lower_band)  # 返回中值和低值，替换NaN为0
+
+# 定义Chaikin Money Flow（CMF）指标计算函数
 def chaikin_money_flow(dataframe, n=20, fillna=False) -> Series:
-    """Chaikin Money Flow (CMF)
-    It measures the amount of Money Flow Volume over a specific period.
-    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:chaikin_money_flow_cmf
-    Args:
-        dataframe(pandas.Dataframe): dataframe containing ohlcv
-        n(int): n period.
-        fillna(bool): if True, fill nan values.
-    Returns:
-        pandas.Series: New feature generated.
     """
-    mfv = ((dataframe['close'] - dataframe['low']) - (dataframe['high'] - dataframe['close'])) / (dataframe['high'] - dataframe['low'])
-    mfv = mfv.fillna(0.0)  # float division by zero
-    mfv *= dataframe['volume']
-    cmf = (mfv.rolling(n, min_periods=0).sum()
-           / dataframe['volume'].rolling(n, min_periods=0).sum())
+    计算Chaikin Money Flow（CMF）指标，用于衡量资金流量
+
+    :param dataframe: DataFrame 包含OHLCV数据的DataFrame
+    :param n: int 滑动窗口大小
+    :param fillna: bool 是否填充NaN值
+    :return: Series CMF指标值
+    """
+    mfv = ((dataframe['close'] - dataframe['low']) - (dataframe['high'] - dataframe['close'])) / (dataframe['high'] - dataframe['low'])  # 计算资金流量因子
+    mfv = mfv.fillna(0.0)  # 填充NaN值为0，避免浮点除零错误
+    mfv *= dataframe['volume']  # 乘以成交量，得到资金流量
+    cmf = (mfv.rolling(n, min_periods=0).sum() / dataframe['volume'].rolling(n, min_periods=0).sum())  # 计算CMF值
     if fillna:
-        cmf = cmf.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return Series(cmf, name='cmf')
+        cmf = cmf.replace([np.inf, -np.inf], np.nan).fillna(0)  # 替换无穷值为NaN，并填充为0
+    return Series(cmf, name='cmf')  # 返回CMF指标值
 
+# 定义Heikin Ashi典型价格计算函数
 def ha_typical_price(bars):
-    res = (bars['ha_high'] + bars['ha_low'] + bars['ha_close']) / 3.
-    return Series(index=bars.index, data=res)
+    """
+    计算Heikin Ashi典型价格
 
-class open01(IStrategy):
+    :param bars: DataFrame 包含Heikin Ashi数据的DataFrame
+    :return: Series Heikin Ashi典型价格
     """
-    PASTE OUTPUT FROM HYPEROPT HERE
-    Can be overridden for specific sub-strategies (stake currencies) at the bottom.
+    res = (bars['ha_high'] + bars['ha_low'] + bars['ha_close']) / 3.  # 计算典型价格
+    return Series(index=bars.index, data=res)  # 返回典型价格序列
+
+# 定义交易策略类
+class open01_yuty(IStrategy):
     """
-    INTERFACE_VERSION = 3
+    定义交易策略类，继承自Freqtrade的IStrategy
+    包含买入、卖出、止损、指标计算等逻辑
+    """
+    INTERFACE_VERSION = 3  # 定义接口版本号
 
     buy_params = {
-       "bbdelta_close": 0.01568,
-       "bbdelta_tail": 0.75301,
-       "close_bblower": 0.01195,
-       "closedelta_close": 0.0092,
-       "base_nb_candles_buy": 12,
-       "rsi_buy": 58,
-       "low_offset": 0.985,
-       "rocr_1h": 0.57032,
-       "rocr1_1h": 0.7210406300824859,
-
+        "bbdelta_close": 0.01568,
+        "bbdelta_tail": 0.75301,
+        "close_bblower": 0.01195,
+        "closedelta_close": 0.0092,
+        "base_nb_candles_buy": 12,
+        "rsi_buy": 58,
+        "low_offset": 0.985,
+        "rocr_1h": 0.57032,
+        "rocr1_1h": 0.7210406300824859,
         "buy_clucha_bbdelta_close": 0.049,
         "buy_clucha_bbdelta_tail": 1.146,
         "buy_clucha_close_bblower": 0.018,
         "buy_clucha_closedelta_close": 0.017,
         "buy_clucha_rocr_1h": 0.526,
-
         "buy_cci": -116,
         "buy_cci_length": 25,
         "buy_rmi": 49,
         "buy_rmi_length": 17,
         "buy_srsi_fk": 32,
         "buy_bb_width_1h": 1.074,
-
-    }   
+    }  # 定义买入参数
 
     sell_params = {
-
-      "pHSL": -0.397,
-      "pPF_1": 0.012,
-      "pPF_2": 0.07,
-      "pSL_1": 0.015,
-      "pSL_2": 0.068,
-      "sell_bbmiddle_close": 1.0909210168690215,
-      "sell_fisher": 0.46405736994786184,
-      
-      "base_nb_candles_sell": 22,
-      "high_offset": 1.014,
-      "high_offset_2": 1.01,
-
-      "sell_u_e_2_cmf": -0.0,
-      "sell_u_e_2_ema_close_delta": 0.016,
-      "sell_u_e_2_rsi": 10,
-
-      "sell_deadfish_profit": -0.063,
-      "sell_deadfish_bb_factor": 0.954,
-      "sell_deadfish_bb_width": 0.043,
-      "sell_deadfish_volume_factor": 2.37
-    }
+        "pHSL": -0.397,
+        "pPF_1": 0.012,
+        "pPF_2": 0.07,
+        "pSL_1": 0.015,
+        "pSL_2": 0.068,
+        "sell_bbmiddle_close": 1.0909210168690215,
+        "sell_fisher": 0.46405736994786184,
+        "base_nb_candles_sell": 22,
+        "high_offset": 1.014,
+        "high_offset_2": 1.01,
+        "sell_u_e_2_cmf": -0.0,
+        "sell_u_e_2_ema_close_delta": 0.016,
+        "sell_u_e_2_rsi": 10,
+        "sell_deadfish_profit": -0.063,
+        "sell_deadfish_bb_factor": 0.954,
+        "sell_deadfish_bb_width": 0.043,
+        "sell_deadfish_volume_factor": 2.37,
+    }  # 定义卖出参数
 
     minimal_roi = {
-        "0": 100
-    }
+        "0": 100,
+    }  # 定义最小回报率
 
-    position_adjustment_enable = True
+    position_adjustment_enable = True  # 启用仓位调整
 
-    stoploss = -0.99  # use custom stoploss
-    trailing_stop = False
-    trailing_stop_positive = 0.02 #povodne 0.001
-    trailing_stop_positive_offset = 0.10 #povodne 0.012
-    trailing_only_offset_is_reached = True
-    position_adjustment_enable = True
+    stoploss = -0.99  # 定义止损点
 
-    """
-    END HYPEROPT
-    """
+    trailing_stop = False  # 禁用追踪止损
+    trailing_stop_positive = 0.02  # 追踪止损的正偏移
+    trailing_stop_positive_offset = 0.10  # 追踪止损的正偏移量
+    trailing_only_offset_is_reached = True  # 仅在达到偏移量时启用追踪止损
 
-    timeframe = '5m'
+    timeframe = '5m'  # 定义时间框架
 
-    use_exit_signal = True
-    exit_profit_only = False
-    ignore_roi_if_entry_signal = False
+    use_exit_signal = True  # 启用退出信号
+    exit_profit_only = False  # 不仅基于利润退出
+    ignore_roi_if_entry_signal = False  # 如果有买入信号则忽略ROI
 
-    use_custom_stoploss = False
+    use_custom_stoploss = False  # 禁用自定义止损
 
-    process_only_new_candles = True
-    startup_candle_count = 168
+    process_only_new_candles = True  # 仅处理新蜡烛
+    startup_candle_count = 168  # 启动时需要的蜡烛数量
 
     order_types = {
         'entry': 'market',
@@ -188,19 +226,24 @@ class open01(IStrategy):
         'force_exit': 'market',
         'stoploss': 'market',
         'stoploss_on_exchange': False,
-
         'stoploss_on_exchange_interval': 60,
-        'stoploss_on_exchange_limit_ratio': 0.99
-    }
-    
+        'stoploss_on_exchange_limit_ratio': 0.99,
+    }  # 定义订单类型
+
     def is_support(self, row_data) -> bool:
+        """
+        判断是否为支撑位
+
+        :param row_data: List 包含价格数据的列表
+        :return: bool 是否为支撑位
+        """
         conditions = []
         for row in range(len(row_data)-1):
             if row < len(row_data)/2:
                 conditions.append(row_data[row] > row_data[row+1])
             else:
                 conditions.append(row_data[row] < row_data[row+1])
-        return reduce(lambda x, y: x & y, conditions)
+        return reduce(lambda x, y: x & y, conditions)  # 返回所有条件的逻辑与结果
 
     fast_ewo = 50
     slow_ewo = 200
@@ -282,19 +325,32 @@ class open01(IStrategy):
     pSL_2 = DecimalParameter(0.020, 0.070, default=0.040, decimals=3, space='sell', optimize=False,load=True)
     
     def informative_pairs(self):
-        pairs = self.dp.current_whitelist()
-        informative_pairs = [(pair, '1h') for pair in pairs]
+        """
+        定义信息性交易对，主要用于多时间框架分析
+        """
+        pairs = self.dp.current_whitelist()  # 获取当前白名单中的所有交易对
+        informative_pairs = [(pair, '1h') for pair in pairs]  # 将所有交易对与1小时时间框架关联
 
-        informative_pairs += [("BTC/USDT", "5m"),
+        informative_pairs += [("BTC/USDT", "5m"),  # 添加BTC/USDT的5分钟时间框架
                              ]
         return informative_pairs
     
     
     def custom_exit(self, pair: str, trade: 'Trade', current_time: 'datetime', current_rate: float, current_profit: float, **kwargs):
-        dataframe, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
-        last_candle = dataframe.iloc[-1].squeeze()
-        filled_buys = trade.select_filled_orders('buy')
-        count_of_buys = len(filled_buys)
+        """
+        自定义退出策略，根据当前利润和其他条件决定何时退出交易
+
+        :param pair: str 交易对
+        :param trade: Trade 当前交易对象
+        :param current_time: datetime 当前时间
+        :param current_rate: float 当前价格
+        :param current_profit: float 当前利润
+        :return: str 退出信号的名称
+        """
+        dataframe, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)  # 获取当前交易对的分析过的蜡烛数据
+        last_candle = dataframe.iloc[-1].squeeze()  # 获取最后一根蜡烛数据
+        filled_buys = trade.select_filled_orders('buy')  # 获取所有已成交的买入订单
+        count_of_buys = len(filled_buys)  # 计算已成交买入订单的数量
         if (last_candle is not None):
             if (current_profit > self.sell_trail_profit_min_1.value) & (current_profit < self.sell_trail_profit_max_1.value) & (((trade.max_rate - trade.open_rate) / 100) > (current_profit + self.sell_trail_down_1.value)):
                 return 'trail_target_1'
@@ -322,6 +378,16 @@ class open01(IStrategy):
 
     def custom_stoploss(self, pair: str, trade: 'Trade', current_time: datetime,
                         current_rate: float, current_profit: float, **kwargs) -> float:
+        """
+        自定义止损策略，根据当前利润动态调整止损点
+
+        :param pair: str 交易对
+        :param trade: Trade 当前交易对象
+        :param current_time: datetime 当前时间
+        :param current_rate: float 当前价格
+        :param current_profit: float 当前利润
+        :return: float 止损点
+        """
         HSL = self.pHSL.value
         PF_1 = self.pPF_1.value
         SL_1 = self.pSL_1.value
@@ -342,6 +408,13 @@ class open01(IStrategy):
 
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        """
+        计算各种技术指标并将其添加到数据集中
+
+        :param dataframe: DataFrame 包含OHLC数据的DataFrame
+        :param metadata: dict 附加元数据
+        :return: DataFrame 包含技术指标的DataFrame
+        """
         info_tf = '5m'
         informative = self.dp.get_pair_dataframe('BTC/USDT', timeframe=info_tf)
         informative_btc = informative.copy().shift(1)
@@ -501,6 +574,13 @@ class open01(IStrategy):
 
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:    
+        """
+        生成买入信号，满足特定条件时发出买入信号
+
+        :param dataframe: DataFrame 包含OHLC数据的DataFrame
+        :param metadata: dict 附加元数据
+        :return: DataFrame 更新后的DataFrame，包含买入信号
+        """
         btc_dump = (
                 (dataframe['btc_close'].rolling(24).max() >= (dataframe['btc_close'] * 1.03 ))
             )  
@@ -676,6 +756,13 @@ class open01(IStrategy):
 
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        """
+        生成卖出信号，满足特定条件时发出卖出信号
+
+        :param dataframe: DataFrame 包含OHLC数据的DataFrame
+        :param metadata: dict 附加元数据
+        :return: DataFrame 更新后的DataFrame，包含卖出信号
+        """
         dataframe.loc[
             (dataframe['fisher'] > self.sell_fisher.value) &
             (dataframe['ha_high'].le(dataframe['ha_high'].shift(1))) &
@@ -697,20 +784,34 @@ class open01(IStrategy):
     
     def top_percent_change_dca(self, dataframe: DataFrame, length: int) -> float:
         """
-        Percentage change of the current close from the range maximum Open price
+        计算当前收盘价与过去一段时间内最大开盘价的百分比变化
 
-        :param dataframe: DataFrame The original OHLC dataframe
-        :param length: int The length to look back
+        :param dataframe: DataFrame 包含OHLC数据的DataFrame
+        :param length: int 回溯的时间长度
+        :return: float 百分比变化值
         """
         if length == 0:
+            # 如果回溯长度为0，计算当前开盘价与收盘价的百分比变化
             return (dataframe['open'] - dataframe['close']) / dataframe['close']
         else:
+            # 否则，计算过去length时间内最大开盘价与当前收盘价的百分比变化
             return (dataframe['open'].rolling(length).max() - dataframe['close']) / dataframe['close']
         
 
     def adjust_trade_position(self, trade: Trade, current_time: datetime,
                               current_rate: float, current_profit: float, min_stake: float,
                               max_stake: float, **kwargs):
+        """
+        动态调整交易仓位，根据市场情况和策略参数决定是否加仓
+
+        :param trade: Trade 当前交易对象
+        :param current_time: datetime 当前时间
+        :param current_rate: float 当前价格
+        :param current_profit: float 当前利润
+        :param min_stake: float 最小投资金额
+        :param max_stake: float 最大投资金额
+        :return: float 加仓的金额
+        """
         if current_profit > self.initial_safety_order_trigger:
             return None
 
@@ -741,20 +842,6 @@ class open01(IStrategy):
             logger.info(f"DCA for {trade.pair} waiting for cmf_1h ({last_candle['cmf_1h']}) to rise above 0. Waiting for rsi_1h ({last_candle['rsi_14_1h']})to rise above 30")
             return None
 
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        
         if 1 <= count_of_buys <= self.max_safety_orders:
             safety_order_trigger = (abs(self.initial_safety_order_trigger) * count_of_buys)
             if (self.safety_order_step_scale > 1):
