@@ -5,11 +5,11 @@ conda activate freqtrade
 
 
 freqtrade trade \
---config /Users/yutieyang/Documents/yuty_projects/freqtrade/yuty_space/yuty_data/configs/config_TheForce-dr.json \
---userdir /Users/yutieyang/Documents/yuty_projects/freqtrade/yuty_space/yuty_data \
---strategy FSupertrendStrategy \
---strategy-path /Users/yutieyang/Documents/yuty_projects/freqtrade/yuty_space/freqtrade-strategies/user_data/strategies/futures \
+--config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/open03/config_open03_futures.json \
+--userdir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data \
+--strategy open03_630 \
+--strategy-path /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/strategies \
 --recursive-strategy-search \
---db-url sqlite:////Users/yutieyang/Documents/yuty_projects/freqtrade/yuty_space/DB/FSupertrendStrategy_dryrun2/debug_dryrun.sqlite
+--db-url sqlite:////Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/db/open03_debug.sqlite
 
 

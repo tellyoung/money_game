@@ -31,14 +31,49 @@ conda activate freqtrade
 # --recursive-strategy-search
 
 
-
-
+# ============ open03_futures ===================
 freqtrade backtesting \
---config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_test_spot.json \
+--config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/open03/config_open03_futures.json \
 --userdir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data \
---strategy open01_yuty \
+--strategy open03 \
 --breakdown week month \
 --strategy-path /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/strategies \
 --recursive-strategy-search \
---datadir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Datasets/binance/Vol_top20_futrue_202501_202505 \
---timerange 20250101-20250601 
+--datadir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Datasets/binance/Vol_top20_202501_202506 \
+--timerange 20250501-20250707
+
+# ============ open03_spot ===================
+# freqtrade backtesting \
+# --config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/open03/config_open03_spot.json \
+# --userdir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data \
+# --strategy open03 \
+# --breakdown week month \
+# --strategy-path /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/strategies \
+# --recursive-strategy-search \
+# --datadir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Datasets/binance/Vol_top20_202501_202506 \
+# --timerange 20250501-20250613
+
+
+# ============ open01 ===================
+# freqtrade backtesting \
+# --config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/config_open01_spot.json \
+# --userdir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data \
+# --strategy open02 \
+# --breakdown week month \
+# --strategy-path /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/strategies \
+# --recursive-strategy-search \
+# --datadir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Datasets/binance/Vol_top20_202501_202506 \
+# --timerange 20250101-20250613
+
+
+
+# ============ MS ===================
+# freqtrade backtesting \
+# --config /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/configs/open03/config_open03_futures.json \
+# --userdir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data \
+# --strategy MS0623 \
+# --breakdown week month \
+# --strategy-path /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Trading/user_data/strategies \
+# --recursive-strategy-search \
+# --datadir /Users/yutieyang/Documents/yuty/yuty_projects/money_game/Datasets/binance/Vol_top20_202501_202506 \
+# --timerange 20250101-20250613

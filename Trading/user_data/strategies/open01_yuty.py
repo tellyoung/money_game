@@ -200,7 +200,8 @@ class open01_yuty(IStrategy):
 
     position_adjustment_enable = True  # 启用仓位调整
 
-    stoploss = -0.99  # 定义止损点
+    # stoploss = -0.99  # 定义止损点
+    stoploss = -0.1  # 定义止损点
 
     trailing_stop = False  # 禁用追踪止损
     trailing_stop_positive = 0.02  # 追踪止损的正偏移
@@ -614,20 +615,17 @@ class open01_yuty(IStrategy):
             ),
         ['enter_long', 'enter_tag']] = (1, 'Break signal')    
 
-        dataframe.loc[
-                        
-                    ((dataframe['rocr_1h'] > self.buy_clucha_rocr_1h.value ) &
-                
-                        (dataframe['bb_lowerband2_40'].shift() > 0) &
-                        (dataframe['bb_delta_cluc'] > dataframe['ha_close'] * self.buy_clucha_bbdelta_close.value) &
-                        (dataframe['ha_closedelta'] > dataframe['ha_close'] * self.buy_clucha_closedelta_close.value) &
-                        (dataframe['tail'] < dataframe['bb_delta_cluc'] * self.buy_clucha_bbdelta_tail.value) &
-                        (dataframe['ha_close'] < dataframe['bb_lowerband2_40'].shift()) &
-                        (dataframe['close'] > (dataframe['sup_level_1h'] * 0.88)) &
-                        (dataframe['ha_close'] < dataframe['ha_close'].shift()) 
-            
-                    ),
-        ['enter_long', 'enter_tag']] = (1, 'cluc_HA')    
+        # dataframe.loc[
+        #             ((dataframe['rocr_1h'] > self.buy_clucha_rocr_1h.value ) &
+        #                 (dataframe['bb_lowerband2_40'].shift() > 0) &
+        #                 (dataframe['bb_delta_cluc'] > dataframe['ha_close'] * self.buy_clucha_bbdelta_close.value) &
+        #                 (dataframe['ha_closedelta'] > dataframe['ha_close'] * self.buy_clucha_closedelta_close.value) &
+        #                 (dataframe['tail'] < dataframe['bb_delta_cluc'] * self.buy_clucha_bbdelta_tail.value) &
+        #                 (dataframe['ha_close'] < dataframe['bb_lowerband2_40'].shift()) &
+        #                 (dataframe['close'] > (dataframe['sup_level_1h'] * 0.88)) &
+        #                 (dataframe['ha_close'] < dataframe['ha_close'].shift()) 
+        #             ),
+        # ['enter_long', 'enter_tag']] = (1, 'cluc_HA') 
         
          
         dataframe.loc[    
@@ -712,14 +710,13 @@ class open01_yuty(IStrategy):
         ),
         ['enter_long', 'enter_tag']] = (1, 'NFINext37')   
 
-        dataframe.loc[ 
-            ((dataframe['ema_26'] > dataframe['ema_12'])&
-            ((dataframe['ema_26'] - dataframe['ema_12']) > (dataframe['open'] * self.buy_ema_open_mult_7))&
-            ((dataframe['ema_26'].shift() - dataframe['ema_12'].shift()) > (dataframe['open'] / 100))&
-            (dataframe['cti'] < self.buy_cti_7)      
-
-        ),        
-        ['enter_long', 'enter_tag']] = (1, 'NFINext7')   
+        # dataframe.loc[ 
+        #     ((dataframe['ema_26'] > dataframe['ema_12'])&
+        #     ((dataframe['ema_26'] - dataframe['ema_12']) > (dataframe['open'] * self.buy_ema_open_mult_7))&
+        #     ((dataframe['ema_26'].shift() - dataframe['ema_12'].shift()) > (dataframe['open'] / 100))&
+        #     (dataframe['cti'] < self.buy_cti_7)      
+        # ),        
+        # ['enter_long', 'enter_tag']] = (1, 'NFINext7')   
 
         dataframe.loc[
                 ((dataframe['rsi_slow'] < dataframe['rsi_slow'].shift(1)) &

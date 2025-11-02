@@ -7,8 +7,11 @@ factor_data/
 
 Trading/user_data/configs/
 Trading/user_data/hyperopt_results/
+Trading/user_data/strategies/
 
 Trading4Real/
 backtest_results/
 __pycache__/
 mlruns/
+*.sqlite
+partys/
